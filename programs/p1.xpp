@@ -1,0 +1,10 @@
+def func()
+{
+    int x;
+    x = 10;
+    print 15;
+    callable();
+}
+
+def callable() {
+}
