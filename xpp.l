@@ -1,7 +1,7 @@
 %{
 // Definitions
 #include <stdlib.h>
-// #include "calc.tab.h"
+#include "xpp.tab.h"
 %}
 
 white               [ \t]+
@@ -10,11 +10,11 @@ digit               [0-9]
 ident               [a-zA-Z]+
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
-string_constant     ""
+string_constant     \"[^\"\\]*\"
 
 %%
     /* Keywords */
-def                 { printf("found DEF\n"); }
+def                 { printf("found DEF\n"); return DEF; }
 int                 { printf("found int\n"); }
 float               { printf("found float\n"); }
 string              { printf("found string\n"); }
@@ -57,24 +57,4 @@ null                { printf("found null\n"); }
     /* Ignore everything else */
 .                   {}
 
-
 %%
-// Refs: http://dinosaur.compilertools.net/lex/index.html
-// info flex
-
-// User definitions
-
-int main(int argc, char **argv)
-{
-    //!TODO: read file from argv
-    yylex();
-}
-
-int yywrap() {
-    return 0;
-}
-
-int yyerror(const char *s)
-{
-    fprintf(stderr, "erro: %s\n", s);
-}

@@ -1,3 +1,5 @@
+string s = "abc";
+
 def func()
 {
     int x;
