@@ -1,7 +1,9 @@
-string s = "abc";
+
+
 
 def func()
 {
+    string s = "abc";
     int x;
     x = 10;
     print 15;

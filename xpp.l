@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "xpp.tab.h"
+#define YY_USER_ACTION \
+    yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yylloc.last_column;
 %}
+%option yylineno
 
 white               [ \t]+
 digit               [0-9]
