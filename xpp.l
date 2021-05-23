@@ -1,6 +1,7 @@
 %{
 // Definitions
 #include <stdlib.h>
+#include <stdbool.h>
 #include "xpp.tab.h"
 %}
 
@@ -14,47 +15,51 @@ string_constant     \"[^\"\\]*\"
 
 %%
     /* Keywords */
-def                 { printf("found DEF\n"); return DEF; }
-int                 { printf("found int\n"); }
-float               { printf("found float\n"); }
-string              { printf("found string\n"); }
-break               { printf("found break\n"); }
-print               { printf("found print\n"); }
-read                { printf("found read\n"); }
-return              { printf("found return\n"); }
-if                  { printf("found if\n"); }
-else                { printf("found else\n"); }
-for                 { printf("found for\n"); }
-new                 { printf("found new\n"); }
-null                { printf("found null\n"); }
+def                 { return DEF;       }
+int                 { return INT;       }
+float               { return FLOAT;     }
+string              { return STRING;    }
+break               { return BREAK;     }
+print               { return PRINT;     }
+read                { return READ;      }
+return              { return RETURN;    }
+if                  { return IF;        }
+else                { return ELSE;      }
+for                 { return FOR;       }
+new                 { return NEW;       }
+null                { return NUL;       }
 
     /* Punctuation */
-"("                 { printf("found LPAREN\n"); }
-")"                 { printf("found RPAREN\n"); }
-"{"                 { printf("found LBRAC\n"); }
-"}"                 { printf("found RBRAC\n"); }
-";"                 { printf("found ;\n"); }
+"("                 { return LPAREN; }
+")"                 { return RPAREN; }
+"{"                 { return LBRAC;  }
+"}"                 { return RBRAC;  }
+";"                 { return SEMIC;  }
 
     /* Operators */
-"<"                 { printf("found <\n"); }
-">"                 { printf("found >\n"); }
-"<="                { printf("found <=\n"); }
-">="                { printf("found >=\n"); }
-"=="                { printf("found ==\n"); }
-"!="                { printf("found !=\n"); }
-"+"                 { printf("found +\n"); }
-"-"                 { printf("found -\n"); }
-"*"                 { printf("found *\n"); }
-"/"                 { printf("found FORWSLASH\n"); }
-"%"                 { printf("found MOD\n"); }
+"<"                 { return CMP;   }
+">"                 { return CMP;   }
+"<="                { return CMP;   }
+">="                { return CMP;   }
+"=="                { return CMP;   }
+"!="                { return CMP;   }
+"+"                 { return OP;    }
+"-"                 { return OP;    }
+"*"                 { return OP;    }
+"/"                 { return OP;    }
+"%"                 { return OP;    }
 
     /* Named rules */
-{ident}               { printf("found IDENT\n"); }
-{int_constant}        { printf("found int_constant\n"); }
-{float_constant}      { printf("found float_constant\n"); }
-{string_constant}     { printf("found string_constant\n"); }
+{ident}               { yylval.strval = yytext; return IDENT; }
+{string_constant}     { yylval.strval = yytext; return STRING_C; }
+{int_constant}        { yylval.val    = atoi(yytext); return INT_C; }
+{float_constant}      { yylval.fval   = atof(yytext); return FLOAT_C; }
 
     /* Ignore everything else */
 .                   {}
 
 %%
+
+int yywrap() {
+    return true;
+}

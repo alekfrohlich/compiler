@@ -1,4 +1,4 @@
-lexer: xpp.l
+lexer: xpp.l xpp.y
 	flex xpp.l
 	bison -d xpp.y
 	gcc xpp.tab.c lex.yy.c -o lexer
