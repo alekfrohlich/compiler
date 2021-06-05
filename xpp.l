@@ -3,16 +3,19 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "xpp.tab.h"
+int yycolumn = 1;
 #define YY_USER_ACTION \
-    yylloc.first_line = yylloc.last_line = yylineno; \
-    yylloc.first_column = yylloc.last_column;
+    yylloc.first_line = yylloc.last_line = yylineno;                           \
+    yylloc.first_column = yycolumn;                                            \
+    yylloc.last_column = yycolumn + yyleng - 1;                                \
+    yycolumn += yyleng;
 %}
 %option yylineno
 
 white               [ \t]+
 digit               [0-9]
  /* TODO: improve ident pattern */
-ident               [a-zA-Z]+
+ident               [a-zA-Z]+[a-zA-Z0-9]*
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
 string_constant     \"[^\"\\]*\"
@@ -34,11 +37,13 @@ new                 { return NEW;       }
 null                { return NUL;       }
 
     /* Punctuation */
-"("                 { return LPAREN; }
-")"                 { return RPAREN; }
-"{"                 { return LBRAC;  }
-"}"                 { return RBRAC;  }
-";"                 { return SEMIC;  }
+"("                 { return '('; }
+")"                 { return ')'; }
+"{"                 { return '{';  }
+"}"                 { return '}';  }
+";"                 { return ';';  }
+","                 { return ',';  }
+"="                 { return '=';  }
 
     /* Operators */
 "<"                 { return CMP;   }
@@ -47,11 +52,14 @@ null                { return NUL;       }
 ">="                { return CMP;   }
 "=="                { return CMP;   }
 "!="                { return CMP;   }
-"+"                 { return OP;    }
-"-"                 { return OP;    }
-"*"                 { return OP;    }
-"/"                 { return OP;    }
-"%"                 { return OP;    }
+"+"                 { return '+';  }
+"-"                 { return '-';  }
+"*"                 { return '*';  }
+"/"                 { return '/';  }
+"%"                 { return '%';  }
+
+    /* Ignore comments */
+"//".*              {}
 
     /* Named rules */
 {ident}               { yylval.strval = yytext; return IDENT; }
@@ -60,6 +68,7 @@ null                { return NUL;       }
 {float_constant}      { yylval.fval   = atof(yytext); return FLOAT_C; }
 
     /* Ignore everything else */
+"\n"                { yycolumn = 1; }
 .                   {}
 
 %%

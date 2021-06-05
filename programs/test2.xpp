@@ -1,0 +1,41 @@
+
+// Test function declaration
+def f()                         { int x; }
+def g(int a, float b, string c) { int x; }
+def h(int a)                    { int x; }
+def i(int a, int b,)            { int x; }
+
+// Test statement
+def j() {
+    int     var1;
+    float   var2;
+    string  var3;
+    int     var4;
+    int     var5;
+    int     var6;
+
+    //coloca as attribs aqui nicolas
+    var1 = 10;
+    var2 = 3.1452;
+    var3 = "lalala";
+    var4 = null; 
+    int var1copy;
+    var1copy = var1;
+    var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
+    var6 = 2 < 2;
+
+    break;
+    return;
+    
+    int a;
+    for(a = 12; a < 12; a = 1) break;
+    for(a = 13; a < 12; a = a + 1) {
+        int b;    
+    }
+    
+    
+    {
+        float var4f;
+    }
+    
+}
