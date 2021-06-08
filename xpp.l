@@ -2,6 +2,7 @@
 // Definitions
 #include <stdlib.h>
 #include <stdbool.h>
+#include "ast.h"
 #include "xpp.tab.h"
 int yycolumn = 1;
 #define YY_USER_ACTION \
