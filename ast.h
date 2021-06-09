@@ -1,4 +1,5 @@
-
+#ifndef AST_H
+#define AST_H
 
 class Node {
 public:    
@@ -29,3 +30,5 @@ public:
     ValueType val;
     NodeType type;
 };
+
+#endif

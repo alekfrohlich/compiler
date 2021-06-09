@@ -1,3 +1,0 @@
-1) Is cc-2020-2 LALR(1)? If not, can we adapt it to be?
-2) Convert it to LL(1): remove recursion and left factor, follow the assignment
-3) Leave the bison grammar working with some test programs

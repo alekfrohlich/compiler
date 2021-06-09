@@ -2,6 +2,7 @@
 // Definitions
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string>
 #include "ast.h"
 #include "xpp.tab.h"
 int yycolumn = 1;
@@ -63,9 +64,9 @@ null                { return NUL;       }
 "//".*              {}
 
     /* Named rules */
-{ident}               { yylval.strval = yytext; return IDENT; }
-{string_constant}     { yylval.strval = yytext; return STRING_C; }
-{int_constant}        { yylval.val    = atoi(yytext); return INT_C; }
+{ident}               { yylval.sval   = strdup(yytext); return IDENT; }
+{string_constant}     { yylval.sval   = strdup(yytext); return STRING_C; }
+{int_constant}        { yylval.ival    = atoi(yytext); return INT_C; }
 {float_constant}      { yylval.fval   = atof(yytext); return FLOAT_C; }
 
     /* Ignore everything else */

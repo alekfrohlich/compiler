@@ -1,28 +1,33 @@
 %{
 #include <stdio.h>
+#include <string>
+
 #include "ast.h"
+#include "env.h"
+
 void yyerror(const char* s);
 int yylex(void);
 %}
 %locations
 
 %union {
-    char *  strval;
-    int     val;
-    double  fval;
-    Node *  nodeval;
+    char*           sval;
+    int             ival;
+    double          fval;
+    Node *          nodeval;
 }
 
  /* Tokens */
 
-// %define api.value.type union
 %token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE FOR NEW NUL
 %token CMP OP
-%token IDENT STRING_C
-%token <val>  INT_C
+%token <sval> IDENT STRING_C
+%token <ival>  INT_C
 %token <fval> FLOAT_C
 %nterm <nodeval> factor unaryexpr term numexpression
 
+ /* !TODO: enum? */
+%nterm <ival> type
 %%
 
 program: statement {  }
@@ -31,21 +36,28 @@ program: statement {  }
 ;
 
 funclist: funcdef funclist | funcdef;
-funcdef: DEF IDENT '(' paramlist ')' '{' statelist '}';
-paramlist: type IDENT ',' paramlist | type IDENT | %empty;  
-type: INT | FLOAT | STRING;
+funcdef: DEF IDENT                      { Env::open_scope(); Env::put(std::string($2), SymType::T_FUNC); }
+                  '(' paramlist ')' '{' { Env::open_scope(); }
+                      statelist '}'     { Env::close_scope(); Env::close_scope(); }
+;
+
+paramlist: type IDENT { Env::put(std::string($2), $1); } ',' paramlist
+        |  type IDENT { Env::put(std::string($2), $1); }
+        |  %empty
+;  
+type: INT { $$ = 0; } | FLOAT { $$ = 1; } | STRING { $$ = 2; };
 
 statelist: statement statelist | statement;
 statement: vardecl ';'
         | atribstat ';'
         | RETURN ';'
         | BREAK ';'
-        | '{' statelist '}'
+        | '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
         | ifstat
         | forstat
 ;
 
-vardecl: type IDENT;
+vardecl: type IDENT { Env::put(std::string($2), $1); };
 atribstat: lvalue '=' expression;
 
 lvalue: IDENT;
@@ -113,7 +125,6 @@ int main(int argc, char **argv)
 #if YYDEBUG
     yydebug = 1;
 #endif
-
     //!TODO: read file from argv
     yyparse();
     // list_tokens();
