@@ -103,7 +103,7 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1)
 // Alek, leia:
 /* TODO: for tem que abrir escopo */ // OK
 /* TODO: funcao ta no escopo errado, tem q ter escopo global */ // OK
-/* TODO: falta checar se variavel ja foi declarada */
+/* TODO: falta checar se variavel ja foi declarada */ // OK
 
 
 
