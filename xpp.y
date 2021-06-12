@@ -6,6 +6,7 @@
 #include "env.h"
 
 void yyerror(const char* s);
+bool break_inside_for();
 int yylex(void);
 %}
 %locations
@@ -36,7 +37,7 @@ program: statement {  }
 ;
 
 funclist: funcdef funclist | funcdef;
-funcdef: DEF IDENT                      { Env::open_scope(); Env::put(std::string($2), SymType::T_FUNC); }
+funcdef: DEF IDENT                      { Env::put(std::string($2), SymType::T_FUNC); Env::open_scope();}
                   '(' paramlist ')' '{' { Env::open_scope(); }
                       statelist '}'     { Env::close_scope(); Env::close_scope(); }
 ;
@@ -51,7 +52,7 @@ statelist: statement statelist | statement;
 statement: vardecl ';'
         | atribstat ';'
         | RETURN ';'
-        | BREAK ';'
+        | BREAK ';' { if(!break_inside_for()) YYABORT;}
         | '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
         | ifstat
         | forstat
@@ -87,7 +88,7 @@ factor:   INT_C                     { $$ = new Node(Node::INTEGER, nullptr, null
 ;
 
 ifstat: 'I';
-forstat: FOR '(' atribstat ';' expression ';' atribstat ')' statement;
+forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
 
 %%
 /* TODO: remove 1-statement programs */
@@ -96,6 +97,14 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' statement;
 /* TODO: print read */
 /* TODO: statement ; */
 /* TODO: if() {} */
+
+// Alek, leia:
+/* TODO: for tem que abrir escopo */ // OK
+/* TODO: funcao ta no escopo errado, tem q ter escopo global */ // OK
+/* TODO: falta checar se variavel ja foi declarada */
+
+
+
 
 // atribstat: lvalue '=' expression | lvalue '=' allocexpression | lvalue '=' funccall;
 
@@ -126,11 +135,24 @@ int main(int argc, char **argv)
     yydebug = 1;
 #endif
     //!TODO: read file from argv
+    Env::open_first_scope();
     yyparse();
+    Env::close_scope();
     // list_tokens();
 }
 
 void yyerror(const char *s)
 {
     fprintf(stderr, "Error %d:%d: %s\n", yylloc.first_line, yylloc.first_column, s);
+}
+
+bool break_inside_for() 
+{
+    if (!Env::_stack.top()->is_inside_for()) {
+        yyerror("Break is NOT inside for");
+        return false;
+    } else {
+        printf("Break is inside for\n");
+        return true;
+    }
 }

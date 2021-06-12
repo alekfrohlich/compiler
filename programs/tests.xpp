@@ -6,7 +6,7 @@ def h(int a)                    { int x; }
 def i(int a, int b,)            { int x; }
 
 // Test statement
-def j() {
+def j(int param1) {
     int     var1;
     float   var2;
     string  var3;
@@ -24,14 +24,27 @@ def j() {
     // var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
     var6 = 2 < 2;
 
-    break;
+    // break;
     return;
     
     int a;
-    // for(a = 12; a < 12; a = 1) break;
-    // for(a = 13; a < 12; a = a + 1) {
-    //    int b;    
-    // }
+    for(a = 12; 1 < 12; a = 1) break;
+    for(a = 13; 1 < 12; a = 1) {
+       int b;
+        for(b = 14; 1 < 12; b = 1){
+            int c;
+            {
+                int d;
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        break;
+    }
+    
+    // break;
     
     
     {

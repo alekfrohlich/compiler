@@ -21,9 +21,16 @@ enum SymType : int {
 
 class Env {
 public:
-    static void open_scope() {
-        std::cout << "Opening Scope:" << std::endl; 
-        _stack.push(new Env);    
+
+    static void open_first_scope(int scope_type = 0) {
+        std::cout << "Opening Scope:" << std::endl;
+        _stack.push(new Env(false));    
+    }
+    
+    static void open_scope(int scope_type = 0) {
+        std::cout << "Opening Scope:" << std::endl;
+        bool inside_for = scope_type == 1 || _stack.top()->is_inside_for();
+        _stack.push(new Env(inside_for));    
     }
 
     static void close_scope() { 
@@ -50,11 +57,18 @@ public:
     static void put(std::string id, int type) { _stack.top()->_table.insert({id, type}); }
     static void remove(std::string id) {}
     static void get(std::string) {}
+    
+    bool is_inside_for() {
+        return _inside_for;
+    }
+
+public:
+    static std::stack<Env*> _stack;
 
 private:
-    static std::stack<Env*> _stack;
+    bool _inside_for;
     
-    Env() {
+    Env(bool inside_for): _inside_for(inside_for) {
         if (_stack.size() > 0)
             _prev = _stack.top();
         else
