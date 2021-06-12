@@ -53,8 +53,27 @@ public:
             e = e->_prev;
         }
     }
-
-    static void put(std::string id, int type) { _stack.top()->_table.insert({id, type}); }
+    
+    static bool check_symbol(std::string id){
+        Env * e = _stack.top();
+        while (e) {
+            if (e->_table.find(id) != e->_table.end()) {
+                std::cout << id << std::endl;
+                return false;
+            }
+            e = e->_prev;
+        }
+        return true;
+    }
+    
+    static bool check_put(std::string id, int type) {
+        if (check_symbol(id)) {
+            _stack.top()->_table.insert({id, type});
+            return true;
+        }
+        return false;
+    }
+    
     static void remove(std::string id) {}
     static void get(std::string) {}
     

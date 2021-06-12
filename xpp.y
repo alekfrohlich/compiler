@@ -7,6 +7,8 @@
 
 void yyerror(const char* s);
 bool break_inside_for();
+bool check_put(std::string id, int type);
+
 int yylex(void);
 %}
 %locations
@@ -37,13 +39,13 @@ program: statement {  }
 ;
 
 funclist: funcdef funclist | funcdef;
-funcdef: DEF IDENT                      { Env::put(std::string($2), SymType::T_FUNC); Env::open_scope();}
+funcdef: DEF IDENT                      { if(!check_put(std::string($2), SymType::T_FUNC)) YYABORT; Env::open_scope();}
                   '(' paramlist ')' '{' { Env::open_scope(); }
                       statelist '}'     { Env::close_scope(); Env::close_scope(); }
 ;
 
-paramlist: type IDENT { Env::put(std::string($2), $1); } ',' paramlist
-        |  type IDENT { Env::put(std::string($2), $1); }
+paramlist: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } ',' paramlist
+        |  type IDENT { if(!check_put(std::string($2), $1)) YYABORT; }
         |  %empty
 ;  
 type: INT { $$ = 0; } | FLOAT { $$ = 1; } | STRING { $$ = 2; };
@@ -58,7 +60,7 @@ statement: vardecl ';'
         | forstat
 ;
 
-vardecl: type IDENT { Env::put(std::string($2), $1); };
+vardecl: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; };
 atribstat: lvalue '=' expression;
 
 lvalue: IDENT;
@@ -153,6 +155,15 @@ bool break_inside_for()
         return false;
     } else {
         printf("Break is inside for\n");
+        return true;
+    }
+}
+
+bool check_put(std::string id, int type){
+    if(!Env::check_put(id, type)) {
+        yyerror("Symbol already exists");
+        return false;
+    } else {
         return true;
     }
 }

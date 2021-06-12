@@ -28,6 +28,7 @@ def j(int param1) {
     return;
     
     int a;
+    // int a;
     for(a = 12; 1 < 12; a = 1) break;
     for(a = 13; 1 < 12; a = 1) {
        int b;
@@ -52,3 +53,5 @@ def j(int param1) {
     }
     
 }
+
+// def j(int param1) {int x;}
