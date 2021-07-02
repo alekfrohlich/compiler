@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string>
+#include <map>
 
 #include "ast.h"
 #include "env.h"
@@ -8,8 +9,12 @@
 void yyerror(const char* s);
 bool break_inside_for();
 bool check_put(std::string id, int type);
+void create_token_map();
 
-int yylex(void);
+unsigned yylex(void);
+
+std::map<unsigned, std::string> token_map;
+
 %}
 %locations
 
@@ -110,26 +115,26 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1)
 
 // atribstat: lvalue '=' expression | lvalue '=' allocexpression | lvalue '=' funccall;
 
-// void list_tokens() {
-//     for (enum yytokentype tok = yylex(); tok != YYEOF; tok = yylex()) {
-//         printf("{type=%u", tok);
-//         switch(tok) {
-//             case IDENT:
-//             case STRING_C:
-//                 printf(",str=%s", yylval.strval);
-//                 break;
-//             case INT_C:
-//                 printf(",int=%d", yylval.val);
-//                 break;
-//             case FLOAT_C:
-//                 printf(",float=%f", yylval.fval);
-//                 break;
-//             default:
-//                 break;
-//         }
-//         printf("}\n");
-//     }
-// }
+void list_tokens() {
+    for (unsigned tok = yylex(); tok != YYEOF; tok = yylex()) {
+        printf("{type = _%s_ ", token_map[tok].c_str());
+        switch(tok) {
+            case IDENT:
+            case STRING_C:
+                printf(", str = %s", yylval.sval);
+                break;
+            case INT_C:
+                printf(", int = %d", yylval.ival);
+                break;
+            case FLOAT_C:
+                printf(", float = %f", yylval.fval);
+                break;
+            default:
+                break;
+        }
+        printf("}\n");
+    }
+}
 
 int main(int argc, char **argv)
 {
@@ -137,10 +142,43 @@ int main(int argc, char **argv)
     yydebug = 1;
 #endif
     //!TODO: read file from argv
-    Env::open_first_scope();
-    yyparse();
-    Env::close_scope();
-    // list_tokens();
+    // Env::open_first_scope();
+    // yyparse();
+    // Env::close_scope();
+    create_token_map();
+    list_tokens();
+}
+
+void create_token_map()
+{
+    int c = DEF;
+    token_map[DEF]      = std::string("DEF");
+    token_map[INT]      = std::string("INT");
+    token_map[FLOAT]    = std::string("FLOAT");
+    token_map[STRING]   = std::string("STRING");
+    token_map[BREAK]    = std::string("BREAK");
+    token_map[PRINT]    = std::string("PRINT");
+    token_map[READ]     = std::string("READ");
+    token_map[RETURN]   = std::string("RETURN");
+    token_map[IF]       = std::string("IF");
+    token_map[FOR]      = std::string("FOR");
+    token_map[NEW]      = std::string("NEW");
+    token_map[NUL]      = std::string("NUL");
+    token_map[CMP]      = std::string("CMP");
+    token_map[OP]       = std::string("OP");
+    token_map[IDENT]    = std::string("IDENT");
+    token_map[STRING_C] = std::string("STRING_C");
+    token_map[INT_C]    = std::string("INT_C");
+    token_map[FLOAT_C]  = std::string("FLOAT_C");
+    
+    for(unsigned i=0; i<=255; i++){
+        char ch = i;
+        token_map[i] = std::string(1, ch);
+        // if(i > 48 && i < 60){
+        //     printf("--%s-\n", token_map[i].c_str());
+        // }
+    }
+    
 }
 
 void yyerror(const char *s)
