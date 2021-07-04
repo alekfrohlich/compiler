@@ -1,0 +1,111 @@
+{
+{
+    int odds;
+    int evens;
+    int i;
+    int n;
+    {
+      int flag;
+    }
+    int t;
+    t = new int[1000];
+    int t2;
+    max = 1000;
+    int count;
+    int counteven;
+    int countodd;
+    int flag;
+    flag = 0;
+    count = 0;
+    counteven = 0;
+    countodds = 0;
+    t2 = new int[500];
+    odds = new int[500];
+    evens = new int[500];
+    print "initializing T1 vector";
+    for (i = 1; i <= max; i = i + 1){
+        t[i] = i;
+    }
+    print "initializing other vectors with 0";
+    for (i = 1; i <= 500; i = i + 1){
+        t2[i] = 0;
+        odds[i] = 0;
+        evens[i] = 0;
+    }
+    print "Finding primes";
+    for (n = 2; n <= max; n = n + 1){
+        flag = 0;
+        for (i = 2; i <= n/2; i = i + 1){
+            if (n % i == 0) {
+                print "Not a prime";
+                flag = 1;
+                break;
+            }
+        }
+        if (flag == 0) {
+            print "found a prime";
+            t2[count] = n;
+            count = count + 1;
+        }
+    }
+    for (i = 0; i <= 500; i = i + 1){
+        if (t2[i] == 0) {
+            print "Done printing Primes";
+            break;
+        }
+        else {
+            print t2[i];
+            print "is a prime";
+        }
+    }
+    for (i = 0; i <= 500; i = i + 1){
+        if (n % 2 != 0) {
+            print "Found an odd prime!";
+            odds[countodd] = n;
+            countodd = countodd + 1;
+            float euler;
+            int cauchy;
+            string neumann;
+        } else {
+            print "Found an even prime!";
+            evens[counteven] = n;
+            counteven = counteven + 1;
+            string euler;
+            string gauss;
+            int newton;
+        }
+    }
+    for (i = 0; i <= 499; i = i + 1){
+        if (odds[i] != t2[i+1]) {
+            print "Something went wrong!";
+        }
+        if (evens[i] != 0) {
+            if (evens[i] != 2) {
+                print "Something went wrong!";
+            } else {
+                print "Found a 2!";
+            }
+        }
+    }
+    int sum;
+    sum = 0;
+    for (i = 0; i <= 500; i = i + 1){
+        sum = sum + t2[i];
+        if (t2[i] == 0) {
+            break;
+        }
+    }
+    for (i = 2; i <= sum/2; i = i + 1){
+        if (sum % i == 0) {
+            flag = 1;
+            break;
+        }
+    }
+    if (flag == 1) {
+        print "Sum was not a prime";
+    }    else {
+        print "Sum was a prime";
+
+    }
+}
+}

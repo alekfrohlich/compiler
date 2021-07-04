@@ -1,0 +1,100 @@
+def foo(string s) {
+    s = "This ";
+    s = s + "Is ";
+    s = s + "An ";
+    s = s + "Example ";
+    return;
+}
+def foobar(float f) {
+    f = 0.15;
+    return;
+}
+def bar(float f3) {
+    float f2;
+    f2 = foobar(f2);
+    f3 = f2 + 1.0;
+    return;
+}
+def foobar2(float f) {
+    {
+        {
+            f = 2;
+            return;
+        }
+    }
+}
+def s(string s) {
+    s = "Function";
+    return;
+}
+def returns(string s) {
+    s = s(s);
+    return;
+}
+def f(float f1) {
+    f1 = 2.5;
+    return;
+}
+def returnf(float f) {
+    f = f(f);
+    return;
+}
+def main() {
+    float f;
+    f = new float[10];
+    int i;
+    i = 0;
+    for (i = 1; i <= 10; i = i + 1){
+        int m;
+        m = f[i];
+        m = returnf(m);
+    }
+    {
+        foo = foo(foo);
+        bar = bar(bar);
+        foobar2 = foobar2(foobar2);
+    }
+    foo = foo(foo);
+    bar = bar(bar);
+    foobar2 = foobar2(foobar2);
+    int x;
+    x = 1;
+    print "X: ";
+    print x;
+    {
+        int ve;
+        ve = 0;
+        print "Ve: ";
+        print ve;
+    }
+        print "X: ";
+        print x;
+    {
+        int ve;
+        ve = 2;
+    }
+        print "X: ";
+        print x;
+}
+def mult() {
+    int dd;
+    int j;
+    int vv;
+    dd = 2;
+    vv = 0;
+    for (vv = 1; vv <= 100; vv = vv + 1)
+    {
+        j = 0;
+        for (vv = 1; j <= 100; vv = vv + 1)
+        {
+            if (j%vv == 0)
+            {
+                dd = dd + dd * j;
+            }
+            else
+            {
+                dd = dd + 1;
+            }
+        }
+    }
+}

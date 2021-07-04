@@ -1,0 +1,110 @@
+{
+{
+    float x;
+    float y;
+    float z;
+    x = 10;
+    y = 100;
+    z = 1000;
+    int a;
+    int b;
+    int c;
+    a = x/y;
+    b = y/z;
+    c = z/x;
+    float f;
+    f = new float[3];
+    float t;
+    t = new int[3];
+    f[0] = x;
+    f[1] = y;
+    f[2] = z;
+    t[0] = a;
+    t[1] = b;
+    t[2] = c;
+    if (f[0] != x) {
+        print "Something went wrong";
+    } else {
+        print "F[0] Ok.";
+    }
+    if (f[1] != y) {
+        print "Something went wrong";
+    } else {
+        print "F[1] Ok.";
+    }
+    if (f[2] != z) {
+        print "Something went wrong";
+    } else {
+        print "F[2] Ok.";
+    }
+    if (t[0] != b) {
+        print "Something went wrong";
+    } else {
+        print "F[0] Ok.";
+    }
+    if (t[1] != b) {
+        print "Something went wrong";
+    } else {
+        print "T[1] Ok.";
+    }
+    if (t[1] != c) {
+        print "Something went wrong";
+    } else {
+        print "T[2] Ok.";
+    }
+    x = 2;
+    y = 20;
+    z = 200;
+    if (f[0] != x) {
+        print "F had a reference";
+    } else {
+        print "F had a copy.";
+    }
+    if (f[1] != y) {
+        print "F had a reference";
+    } else {
+        print "F had a copy.";
+    }
+    if (f[2] != z) {
+        print "F had a reference";
+    } else {
+        print "F had a copy.";
+    }
+    a = -2;
+    b = -20;
+    c = -200;
+    if (t[0] != a) {
+        print "T had a reference";
+    } else {
+        print "T had a copy.";
+    }
+    if (t[1] != b) {
+        print "T had a reference";
+    } else {
+        print "T had a copy.";
+    }
+    if (t[2] != c) {
+        print "T had a reference";
+    } else {
+        print "T had a copy.";
+    }
+    a = x;
+    b = y;
+    c = z;
+    if (t[0] != f[0]) {
+        print "T is not equal to F";
+    } else {
+        print "T equals F.";
+    }
+    if (t[1] != b) {
+        print "T is not equal to F";
+    } else {
+        print "T equals F.";
+    }
+    if (t[2] != c) {
+        print "T is not equal to F";
+    } else {
+        print "T equals F.";
+    }
+}
+}

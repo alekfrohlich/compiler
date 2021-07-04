@@ -117,6 +117,10 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1)
 
 void list_tokens() {
     for (unsigned tok = yylex(); tok != YYEOF; tok = yylex()) {
+        if(token_map.find(tok) == token_map.end()){
+            yyerror("Lexical error");
+            return;
+        }
         printf("{type = _%s_ ", token_map[tok].c_str());
         switch(tok) {
             case IDENT:
@@ -134,6 +138,7 @@ void list_tokens() {
         }
         printf("}\n");
     }
+    printf("\n=======================\nLexical analysis -> OK\n=======================\n");
 }
 
 int main(int argc, char **argv)
@@ -161,6 +166,7 @@ void create_token_map()
     token_map[READ]     = std::string("READ");
     token_map[RETURN]   = std::string("RETURN");
     token_map[IF]       = std::string("IF");
+    token_map[ELSE]     = std::string("ELSE");
     token_map[FOR]      = std::string("FOR");
     token_map[NEW]      = std::string("NEW");
     token_map[NUL]      = std::string("NUL");
@@ -171,13 +177,21 @@ void create_token_map()
     token_map[INT_C]    = std::string("INT_C");
     token_map[FLOAT_C]  = std::string("FLOAT_C");
     
-    for(unsigned i=0; i<=255; i++){
-        char ch = i;
-        token_map[i] = std::string(1, ch);
-        // if(i > 48 && i < 60){
-        //     printf("--%s-\n", token_map[i].c_str());
-        // }
-    }
+    token_map['('] = std::string("(");
+    token_map[')'] = std::string(")");
+    token_map['{'] = std::string("{");
+    token_map['}'] = std::string("}");
+    token_map['['] = std::string("[");
+    token_map[']'] = std::string("]");
+    token_map['('] = std::string("(");
+    token_map[';'] = std::string(";");
+    token_map[','] = std::string(",");
+    token_map['='] = std::string("=");
+    token_map['+'] = std::string("+");
+    token_map['-'] = std::string("-");
+    token_map['*'] = std::string("*");
+    token_map['/'] = std::string("/");
+    token_map['%'] = std::string("%");
     
 }
 

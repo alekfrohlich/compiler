@@ -11,13 +11,15 @@ int yycolumn = 1;
     yylloc.first_column = yycolumn;                                            \
     yylloc.last_column = yycolumn + yyleng - 1;                                \
     yycolumn += yyleng;
+#define LEX_ERROR 9999;
+
 %}
 %option yylineno
 
 white               [ \t]+
 digit               [0-9]
  /* TODO: improve ident pattern */
-ident               [a-zA-Z]+[a-zA-Z0-9]*
+ident               [a-zA-Z_]+[a-zA-Z0-9_]*
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
 string_constant     \"[^\"\\]*\"
@@ -43,6 +45,8 @@ null                { return NUL;       }
 ")"                 { return ')'; }
 "{"                 { return '{';  }
 "}"                 { return '}';  }
+"["                 { return '[';  }
+"]"                 { return ']';  }
 ";"                 { return ';';  }
 ","                 { return ',';  }
 "="                 { return '=';  }
@@ -64,6 +68,7 @@ null                { return NUL;       }
 "//".*              {}
 
     /* Named rules */
+{white}               {}
 {ident}               { yylval.sval   = strdup(yytext); return IDENT; }
 {string_constant}     { yylval.sval   = strdup(yytext); return STRING_C; }
 {int_constant}        { yylval.ival    = atoi(yytext); return INT_C; }
@@ -71,7 +76,7 @@ null                { return NUL;       }
 
     /* Ignore everything else */
 "\n"                { yycolumn = 1; }
-.                   {}
+.                   { return LEX_ERROR; }
 
 %%
 

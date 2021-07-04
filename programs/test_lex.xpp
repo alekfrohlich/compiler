@@ -1,0 +1,42 @@
+
+// Test function declaration
+def g(int a, float b, string c) { int x; }
+
+// Test statement
+def j(int param1) {
+    int     var1;
+    float   var2;
+    string  var3;
+    int     var4;
+
+    var1 = 10;
+    var2 = 3.1452;
+    var3 = "lalala";
+    var3 = " a  ";
+    var3 = "\t  ";
+    var3 = " \n ";
+    var3 = " a  \n   \t";
+    var4 = null;
+    var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
+
+    return;
+    
+    int a;
+    for(a = 12; 1 < 12; a = 1) break;
+    for(a = 12; 1 > 12; a = 1) break;
+    for(a = 12; 1 <= 12; a = 1) break;
+    for(a = 12; 1 >= 12; a = 1) break;
+    for(a = 12; 1 == 12; a = 1) break;
+    for(a = 12; 1 != 12; a = 1) break;
+    
+    read a;
+    int b_c[1][2][3];
+    print "Hello!@#$%";
+    int DDD;
+    DDD = new int[10];
+        
+    {
+        float var4f;
+    }
+    
+}

@@ -1,0 +1,112 @@
+{
+{
+    int integral;
+    string stringao;
+    string a;
+    string b;
+    string c;
+    string d;
+    string e;
+    string buzz;
+    string fizz;
+    string fizzbuzz;
+    string skip;
+    string f;
+    f = new string[4];
+    int i;
+    i = 0;
+    a = "Test";
+    b = "Multi word string";
+    c = "Conc";
+    d = "atenate";
+    e = c + d;
+    fizz = "fizz";
+    buzz = "buzz";
+    fizzbuzz = fizz+buzz;
+    skip = "aabbccdd";
+    print "Original Strings";
+    print a;
+    print b;
+    print c;
+    print d;
+    print e;
+    print fizz;
+    print buzz;
+    print fizzbuzz;
+    print skip;
+    print "End original strings";
+    for (i = 0; i < 4; i = i + 1) {
+        f[i] = a[i];
+    }
+    for (i = 0; i < 4; i = i + 1) {
+        print f[i];
+        int cao;
+        float gato;
+        string gatinho;
+        float cachorro;
+    }
+    if (e == "Concatenate") {
+        print "str + str works";
+        int eusou;
+    } else {
+        print "str + str doesnt work";
+        float eusou;
+        float gato;
+    }
+    print "FIZZBUZZ";
+    for (i = 0; i < 100; i = i + 1) {
+        if (i%15 == 0) {
+            print fizz+buzz;
+        } else {
+            if (i%3 == 0) {
+                print fizz;
+            } else {
+                if (i%5 == 0) {
+                    print buzz;
+                } else {
+                    print i;
+                    break;
+                }
+            }
+        }
+    }
+    string skip2;
+    skip2 = "";
+    for (i = 0; i < 8; i = i + 2) {
+        skip2 = skip2 + skip[i];
+    }
+    print skip2;
+    string all;
+    all = all + a + "\n";
+    all = all + b + "\n";
+    all = all + c + "\n";
+    all = all + d + "\n";
+    all = all + e + "\n";
+    all = all + fizz + "\n";
+    all = all + buzz + "\n";
+    all = all + fizzbuzz + "\n";
+    all = all + skip + "\n";
+    all = all + skip2 + "\n";
+    print "concatenate all";
+    print all;
+    print "end concatenate all";
+    for (i = 0; i < 4; i = i + 1) {
+        print skip2[i];
+        print skip2[i];
+    }
+    print skip;
+    for (i = 0; i < 20; i = i + 1) {
+        print all[i];
+    }
+    for (i = 19; i < 0; i = i - 1) {
+        print all[i];
+    }
+    string zzif;
+    zzif = "";
+    for (i = 3; i < 0; i = i - 1) {
+        zzif = zzif + fizz[i];
+    }
+    print fizz;
+    print zzif;
+}
+}
