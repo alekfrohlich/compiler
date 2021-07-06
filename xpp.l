@@ -22,7 +22,8 @@ digit               [0-9]
 ident               [a-zA-Z_]+[a-zA-Z0-9_]*
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
-string_constant     \"[^\"\\]*\"
+ /* Based of C-style strings; c.f. https://www.lysator.liu.se/c/ANSI-C-grammar-l.html */
+string_constant     \"([^\"]|\\.)*\"
 
 %%
     /* Keywords */
