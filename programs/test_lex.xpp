@@ -16,6 +16,10 @@ def j(int param1) {
     var3 = "\t  ";
     var3 = " \n ";
     var3 = " a  \n   \t";
+    var3 = "\"";
+    //var3 = "\";
+    var3 = "\\";
+    var3 = "";
     var4 = null;
     var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
 

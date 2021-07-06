@@ -125,13 +125,13 @@ void list_tokens() {
         switch(tok) {
             case IDENT:
             case STRING_C:
-                printf(", str = %s", yylval.sval);
+                printf(", str=%s", yylval.sval);
                 break;
             case INT_C:
-                printf(", int = %d", yylval.ival);
+                printf(", int=%d", yylval.ival);
                 break;
             case FLOAT_C:
-                printf(", float = %f", yylval.fval);
+                printf(", float=%f", yylval.fval);
                 break;
             default:
                 break;

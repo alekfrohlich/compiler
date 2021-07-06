@@ -23,7 +23,7 @@ ident               [a-zA-Z_]+[a-zA-Z0-9_]*
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
  /* Based of C-style strings; c.f. https://www.lysator.liu.se/c/ANSI-C-grammar-l.html */
-string_constant     \"([^\"]|\\.)*\"
+string_constant     \"([^\"\\]|\\.)*\"
 
 %%
     /* Keywords */
@@ -71,7 +71,13 @@ null                { return NUL;       }
     /* Named rules */
 {white}               {}
 {ident}               { yylval.sval   = strdup(yytext); return IDENT; }
-{string_constant}     { yylval.sval   = strdup(yytext); return STRING_C; }
+{string_constant}     {
+                        char * dup = strdup(yytext);
+                        dup++;
+                        dup[strlen(dup)-1] = 0;
+                        yylval.sval   = dup;
+                        return STRING_C;
+                      }
 {int_constant}        { yylval.ival    = atoi(yytext); return INT_C; }
 {float_constant}      { yylval.fval   = atof(yytext); return FLOAT_C; }
 
