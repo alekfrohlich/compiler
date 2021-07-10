@@ -19,6 +19,9 @@ Por exemplo:
 ```sh
 ./compiler < programs/test_lex1.xpp
 ```
+
+Os três programas testes escritos na linguagem LCC-2021-1 são test_lex_1.xpp, test_lex_2.xpp, test_lex_3.xpp
+
 # Docs
 
 Documentation for [Flex](https://github.com/westes/flex) and [Bison](https://www.gnu.org/software/bison/manual/bison.pdf)
