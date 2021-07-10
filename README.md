@@ -20,7 +20,7 @@ Por exemplo:
 ./compiler < programs/test_lex1.xpp
 ```
 
-Os três programas testes escritos na linguagem LCC-2021-1 são test_lex_1.xpp, test_lex_2.xpp, test_lex_3.xpp
+Os três programas testes escritos na linguagem LCC-2021-1 são test_lex1.xpp, test_lex2.xpp, test_lex3.xpp
 
 # Docs
 
