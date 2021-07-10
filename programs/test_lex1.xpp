@@ -1,0 +1,103 @@
+
+// Test function declaration
+def g(int a, float b, string c) { int x; }
+
+def sum(int a, int b, int c) {
+    c = a + b;
+    return;
+}
+
+def j(int param1) {
+    int     var1;
+    float   var2;
+    string  var3;
+    int     var4;
+
+    var1 = 10;
+    var2 = 3.1452;
+    var3 = "lalala";
+    var3 = " a  ";
+    var3 = "\t  ";
+    var3 = " \n ";
+    var3 = " a  \n   \t";
+    var3 = "\"";
+    //var3 = "\"; this is not a valid string
+    var3 = "\\";
+    var3 = "";
+    var4 = null;
+    var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
+
+    return;
+    
+    int a;
+    for(a = 12; 1 < 12; a = 1) break;
+    for(a = 12; 1 > 12; a = 1) break;
+    for(a = 12; 1 <= 12; a = 1) break;
+    for(a = 12; 1 >= 12; a = 1) break;
+    for(a = 12; 1 == 12; a = 1) break;
+    for(a = 12; 1 != 12; a = 1) break;
+    
+    read a;
+    int b_c[1][2][3];
+    print "Hello!@#$%";
+    int DDD;
+    DDD = new int[10];
+        
+    {
+        float var4f;
+    }
+    
+    
+    int array[10][10][10];
+    int ii;
+    int jj;
+    int kk;
+    int ll;
+    for(ii = 0; ii < 10; ii = ii + 1) {
+        for(jj = 0; jj <= 9; jj = jj + 1){
+            for(kk = 0; kk < 10; kk = kk + 2){
+                read array[ii][jj][kk];
+            }
+            for(ll = 1; ll < 10; ll = ll + 2){
+                read array[ii][jj][ll];
+            }
+        }
+    }
+    
+    float var107;
+    var107 = 1.897;
+    var107 = var107 * 1.8;
+    
+    int maior;
+    int menor;
+    int soma;
+    int sinal_multiplicacao;
+    soma = 0;
+    sinal_multiplicacao = 1;
+    maior = -99999999;
+    menor =  99999999;
+    for(ii = 0; ii < 10; ii = ii + 1) {
+        for(jj = 0; jj <= 9; jj = jj + 1){
+            for(kk = 0; kk < 10; kk = kk + 1){
+                if(array[ii][jj][kk] > maior) {
+                    maior = array[ii][jj][kk];
+                }
+                if(array[ii][jj][kk] < menor)
+                    menor = array[ii][jj][kk]; 
+                soma = soma + array[ii][jj][kk];
+                sinal_multiplicacao = sinal_multiplicacao * array[ii][jj][kk];            
+            }
+        }
+    }
+    
+    print maior;
+    print menor;
+    print soma;
+    if (sinal_multiplicacao < 0){
+        print "negativo";
+    } else if (sinal_multiplicacao > 0){
+        print "positivo";
+    } else {
+        print "zero";
+    }
+}

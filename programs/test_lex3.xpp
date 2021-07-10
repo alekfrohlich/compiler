@@ -1,0 +1,113 @@
+ 
+// Function To Calculate Volume OF Cylinder
+def volume(float r, float h)
+{
+    float PI;
+    PI = 3.14159265;
+    float vol;
+    vol = PI * r * r * h;
+    print "Volume of Cylinder = ";
+    print vol;
+    
+}
+ 
+// Function To Calculate Total Surface Area OF Cylinder
+def totalsurfacearea(float r, float h)
+{
+    float PI;
+    PI = 3.14159265;
+    float tsurf_ar;
+    tsurf_ar = (2 * PI * r * h) + (2 * PI * r * r);
+    print "Total Surface Area Of Cylinder = ";
+    print tsurf_ar;
+}
+ 
+// Function To Calculate Curved Surface Area OF Cylinder
+def curvedsurfacearea(float r, float h)
+{
+    float PI;
+    PI = 3.14159265;
+    float cursurf_ar;
+    cursurf_ar = (2 * PI * r * h);
+    print "Curved Surface Area Of Cylinder = ";
+    print cursurf_ar;
+}
+
+// Function To Calculate Volume OF Cube
+def volCube(float a)
+{
+    float vol;
+    vol = a * a * a;
+    print "Volume Of Cube = ";
+    print vol;
+}
+ 
+ // Function To Calculate Total Surface Area OF Cube
+def surfaceCube(float a)
+{
+    float surf;
+    surf = 6 * a * a;
+    print "Surface Area Of Cube = ";
+    print surf;
+}
+
+// Function to calculate the area of a square
+def areaSquare(float a)
+{
+    float area;
+    area = a * a;
+    print "Area Of Square = ";
+    print area;
+}
+ 
+// Driver Code
+def main()
+{
+    print "Hello";
+    
+    print "Choose r and h for a Cylinder"
+    float r;
+    read r;
+    float h;
+    read h;
+ 
+    // Function Call And Printing Volume, TSA, CSA Of Cylinder
+    volume(r, h);
+    totalsurfacearea(r, h);
+    curvedsurfacearea(r, h);
+    
+    print "Choose an edge size for a Cube"
+    float a;
+    read a;
+    
+    // Function Call And Printing Volume, SA Of Cube
+    volCube(a);
+    surfaceCube(a);
+    
+    int i;
+    for(i = 0; i < 10; i = i + 1){
+        print i;
+    }
+    
+    print "Choose 100 r and h for Cylinders"
+    float rs[100];
+    float hs[100];
+    
+    for( i = 0; i < 100; i = i + 1) {
+        read rs[i];
+        read hs[i];
+    }
+    
+    for( i = 99; i >= 0; i = i - 1){
+        volume(rs[i], hs[i]);
+        totalsurfacearea(rs[i], hs[i]);
+        curvedsurfacearea(rs[i], hs[i]);
+    }
+    
+    print "You have calculated the volume, the tsa and the csa of 100 Cylinders";
+    
+    print "Choose l for a Square"
+    float l;
+    areaSquare(l);
+    
+}

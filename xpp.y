@@ -28,7 +28,7 @@ std::map<unsigned, std::string> token_map;
  /* Tokens */
 
 %token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE FOR NEW NUL
-%token CMP OP
+%token CMP
 %token <sval> IDENT STRING_C
 %token <ival>  INT_C
 %token <fval> FLOAT_C
@@ -171,7 +171,6 @@ void create_token_map()
     token_map[NEW]      = std::string("NEW");
     token_map[NUL]      = std::string("NUL");
     token_map[CMP]      = std::string("CMP");
-    token_map[OP]       = std::string("OP");
     token_map[IDENT]    = std::string("IDENT");
     token_map[STRING_C] = std::string("STRING_C");
     token_map[INT_C]    = std::string("INT_C");

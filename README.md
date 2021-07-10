@@ -17,7 +17,7 @@ Após os analisadores serem gerados execute o comando onde *test* é o programa 
 Por exemplo:
 
 ```sh
-./compiler < programs/test_lex.xpp
+./compiler < programs/test_lex1.xpp
 ```
 # Docs
 
