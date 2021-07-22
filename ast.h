@@ -6,6 +6,7 @@ public:
     enum NodeType {
         INTEGER,
         FLOAT,
+        STRING,
         PLUS,
         MINUS,
         UMINUS,

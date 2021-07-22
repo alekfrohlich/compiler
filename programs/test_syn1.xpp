@@ -1,0 +1,105 @@
+
+// Test function declaration and funclist
+def f()                         { int x; }
+def g(int a, float b, string c) { int x; }
+def h(int a)                    { int x; }
+def i(int a, int b,)            { int x; }
+
+// Test statement statelist
+def j(int param1) {
+    
+    //test vardecl and arraylistdecl
+    int i1;
+    int i2;
+    int i3;
+    int i4;
+    int i5;
+    int i6;
+    float f1;
+    string s1;
+    int ia1[1][2];
+    int ia2[1][2][3];
+    
+    //test atribstat, lvalue, arraylistexp
+    i1 = null;
+    i1 = 10;
+    f1 = 1.3;
+    s1 = "oi";
+    ia1[0][0] = 1;
+    
+    //test allocexpression
+    i5 = new int[12];
+    i5 = new int[i1];
+    i6 = new int[13][25];
+    ia2[1][1] = new int[8];
+    
+    //test funccall and paramlistcall
+    i2 = f();
+    i3 = i(i1, i2);
+    i4 = g(i1, i2, i3,);
+    ia1[0][1] = h(i1);
+    
+    //test printstat and readstat
+    print "oi";
+    print 1+1;
+    read i1;
+    read ia1[0][0];
+    
+    //test if and return
+    if(2 < 1){
+        int iif1;
+        return;
+    }
+    
+    if(2<1){
+        int iif1;
+        i1 = 9;
+        if (i1 == 9){
+            return;
+        }
+    } else{
+        int iif1;
+        i1 = 11;
+    }
+    
+    //test for and break
+    for(i1 = 1; i1 < 10; i1 = i1 + 1)
+        break;
+    for(i1 = 1; i1 < 10; i1 = i1 + 1){
+        break;
+    }
+    
+    //test ; and statelist
+    ; ;; ;;;
+    {
+        {
+            {
+                ;
+            }
+        }
+        ;
+    }
+    
+    //ERROR:
+    //{
+    //    
+    //}
+    
+    //test expression
+    i1 = 1 <  1;
+    i1 = 1 >  1;
+    i1 = 1 == 1;
+    i1 = 1 != 1;
+    i1 = 1 <= 1;
+    i1 = 1 >= 1;
+    
+    //test numexpression, term, unaryexpr and factor
+    i1 = (1*10 + 2/1 -(-1*-(-1))) % +10;
+    f1 = 1.0*10.0 + 2.0/1.0 -(-1.0*-(-1.0));
+    s1 = ("Hello" + "World  ")*4;
+    i1 = 1;
+    i1 = ((1*10 + 2/1 -(-1*-(-1))) % +i1) + ia1[i1][0];
+    
+    print "Goodbye World";
+}
+

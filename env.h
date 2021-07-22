@@ -76,7 +76,7 @@ public:
     
     static void remove(std::string id) {}
     static void get(std::string) {}
-    
+        
     bool is_inside_for() {
         return _inside_for;
     }
