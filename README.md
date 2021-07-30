@@ -21,7 +21,21 @@ Por exemplo:
 ```
 
 Os três programas testes escritos na linguagem LCC-2021-1 são test_lex1.xpp, test_lex2.xpp, test_lex3.xpp
+O novo programa para testar a análise sintática é o arquivo test_syn1.xpp.
 
-# Docs
+## Docs
 
 Documentation for [Flex](https://github.com/westes/flex) and [Bison](https://www.gnu.org/software/bison/manual/bison.pdf)
+
+## Debug
+Para analisar em detalhes algum erro sintático deve-se usar o comando:
+
+```sh
+make debug
+```
+
+e em seguida deve-se, por exemplo, executar:
+
+```sh
+./compiler < programs/test_lex1.xpp
+```
