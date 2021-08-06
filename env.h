@@ -54,7 +54,7 @@ public:
         }
     }
     
-    static bool check_symbol(std::string id){
+    static bool check_symbol_rec(std::string id){
         Env * e = _stack.top();
         while (e) {
             if (e->_table.find(id) != e->_table.end()) {
@@ -66,8 +66,17 @@ public:
         return true;
     }
     
+    static bool check_symbol_top(std::string id){
+        Env * e = _stack.top();
+        if (e->_table.find(id) != e->_table.end()) {
+            std::cout << id << std::endl;
+            return false;
+        }
+        return true;
+    }
+    
     static bool check_put(std::string id, int type) {
-        if (check_symbol(id)) {
+        if (check_symbol_top(id)) {
             _stack.top()->_table.insert({id, type});
             return true;
         }

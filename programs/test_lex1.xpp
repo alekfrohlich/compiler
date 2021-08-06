@@ -82,8 +82,9 @@ def j(int param1) {
                 if(array[ii][jj][kk] > maior) {
                     maior = array[ii][jj][kk];
                 }
-                if(array[ii][jj][kk] < menor)
-                    menor = array[ii][jj][kk]; 
+                if(array[ii][jj][kk] < menor){
+                    menor = array[ii][jj][kk];
+                } 
                 soma = soma + array[ii][jj][kk];
                 sinal_multiplicacao = sinal_multiplicacao * array[ii][jj][kk];            
             }
@@ -95,9 +96,11 @@ def j(int param1) {
     print soma;
     if (sinal_multiplicacao < 0){
         print "negativo";
-    } else if (sinal_multiplicacao > 0){
-        print "positivo";
     } else {
-        print "zero";
+        if (sinal_multiplicacao > 0){
+            print "positivo";
+        } else {
+            print "zero";
+        }
     }
 }

@@ -63,33 +63,34 @@ def areaSquare(float a)
 // Driver Code
 def main()
 {
+    float results;
     print "Hello";
     
-    print "Choose r and h for a Cylinder"
+    print "Choose r and h for a Cylinder";
     float r;
     read r;
     float h;
     read h;
  
     // Function Call And Printing Volume, TSA, CSA Of Cylinder
-    volume(r, h);
-    totalsurfacearea(r, h);
-    curvedsurfacearea(r, h);
+    results = volume(r, h);
+    results = totalsurfacearea(r, h);
+    results = curvedsurfacearea(r, h);
     
-    print "Choose an edge size for a Cube"
+    print "Choose an edge size for a Cube";
     float a;
     read a;
     
     // Function Call And Printing Volume, SA Of Cube
-    volCube(a);
-    surfaceCube(a);
+    results = volCube(a);
+    results = surfaceCube(a);
     
     int i;
     for(i = 0; i < 10; i = i + 1){
         print i;
     }
     
-    print "Choose 100 r and h for Cylinders"
+    print "Choose 100 r and h for Cylinders";
     float rs[100];
     float hs[100];
     
@@ -99,15 +100,19 @@ def main()
     }
     
     for( i = 99; i >= 0; i = i - 1){
-        volume(rs[i], hs[i]);
-        totalsurfacearea(rs[i], hs[i]);
-        curvedsurfacearea(rs[i], hs[i]);
+        int p1;
+        int p2;
+        p1 = rs[i];
+        p2 = hs[i];
+        results = volume(p1, p2);
+        results = totalsurfacearea(p1, p2);
+        results = curvedsurfacearea(p1, p2);
     }
     
     print "You have calculated the volume, the tsa and the csa of 100 Cylinders";
     
-    print "Choose l for a Square"
+    print "Choose l for a Square";
     float l;
-    areaSquare(l);
+    results = areaSquare(l);
     
 }

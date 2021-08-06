@@ -3,12 +3,14 @@
 
 def func()
 {
-    string s = "abc";
+    string s; 
+    s = "abc";
     int x;
     x = 10;
     print 15;
-    callable();
+    s = callable();
 }
 
 def callable() {
+    ;
 }
