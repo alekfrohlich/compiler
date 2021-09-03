@@ -1,7 +1,7 @@
 
 CPP		:= env.cc
-LY		:= xpp.l xpp.y 
-DEPS 	:= $(CPP) $(LY) 
+LY		:= xpp.l xpp.y
+DEPS 	:= $(CPP) $(LY)
 
 run: $(DEPS)
 	flex xpp.l
@@ -13,7 +13,11 @@ debug: $(DEPS)
 	bison -d --debug xpp.y
 	g++ xpp.tab.c lex.yy.c $(CPP) -o compiler
 
-.PHONY: clean
+.PHONY: clean tests
 clean:
-	@rm -f compiler lex.yy.c 
+	@rm -f compiler lex.yy.c
 	@rm -f xpp.tab.c xpp.tab.h
+
+tests: run
+	./compiler < programs/tests/tests.xpp | grep --quiet --ignore-case "error" || true
+	./compiler < programs/zinho/testBreakErrado.ccc | grep --quiet --ignore-case "error" || true

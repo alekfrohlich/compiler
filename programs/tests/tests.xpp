@@ -1,3 +1,5 @@
+//TODO: organize tests
+
 
 // Test function declaration
 def f()                         { int x; }
@@ -26,7 +28,7 @@ def j(int param1) {
 
     // break;
     return;
-    
+
     int a;
     // int a;
     for(a = 12; 1 < 12; a = 1) break;
@@ -44,14 +46,14 @@ def j(int param1) {
         }
         break;
     }
-    
+
     // break;
-    
-    
+
+
     {
         float var4f;
     }
-    
+
 }
 
 // def j(int param1) {int x;}

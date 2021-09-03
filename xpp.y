@@ -53,39 +53,39 @@ funcdef: DEF IDENT                      { if(!check_put(std::string($2), SymType
 paramlist: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } ',' paramlist
         |  type IDENT { if(!check_put(std::string($2), $1)) YYABORT; }
         |  %empty
-;  
+;
 type: INT { $$ = 0; } | FLOAT { $$ = 1; } | STRING { $$ = 2; };
 
 statelist: statement statelist | statement;
 statement: vardecl ';'
-        | atribstat ';'
-        | printstat ';'
-        | readstat ';'
-        | RETURN ';'
-        | ifstat
-        | forstat
-        | '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
-        | BREAK ';' { if(!break_inside_for()) YYABORT;}
-        | ';'
+        |  atribstat ';'
+        |  printstat ';'
+        |  readstat ';'
+        |  RETURN ';'
+        |  ifstat
+        |  forstat
+        |  '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
+        |  BREAK ';' { if(!break_inside_for()) YYABORT;}
+        |  ';'
 ;
 
 vardecl: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } arraylistdecl;
 atribstat: lvalue '=' expression
-    | lvalue '=' allocexpression
-    | lvalue '='funccall
+         | lvalue '=' allocexpression
+         | lvalue '=' funccall
 ;
 
 funccall: IDENT '(' paramlistcall ')';
 paramlistcall: IDENT ',' paramlistcall
-        |  IDENT
-        |  %empty
+            |  IDENT
+            |  %empty
 ;
 
 printstat: PRINT expression;
-readstat: READ lvalue;
+readstat:  READ  lvalue;
 
-ifstat: IF '(' expression ')' { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
-elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } 
+ifstat:   IF '(' expression ')' { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
+elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); }
         | %empty;
 
 forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
@@ -96,38 +96,38 @@ expression: numexpression
     | numexpression CMP numexpression
 ;
 
-numexpression: numexpression '+' term   
-    | numexpression '-' term            
-    | term                             
+numexpression: numexpression '+' term
+    | numexpression '-' term
+    | term
 ;
 
-term: term '*' unaryexpr    
-    | term '/' unaryexpr    
-    | term '%' unaryexpr    
-    | unaryexpr             
+term: term '*' unaryexpr
+    | term '/' unaryexpr
+    | term '%' unaryexpr
+    | unaryexpr
 ;
 
-unaryexpr: '+' factor   
-    | '-' factor        
-    | factor            
+unaryexpr: '+' factor
+    | '-' factor
+    | factor
 ;
 
-factor:   INT_C                      
+factor:   INT_C
         | FLOAT_C
         | STRING_C
-        | NUL                    
-        | lvalue                     
-        | '(' numexpression ')'      
+        | NUL
+        | lvalue
+        | '(' numexpression ')'
 ;
 
 lvalue: IDENT arraylistexp;
 
-arraylistdecl: arraylistdecl'[' INT_C ']' | %empty;
-arraylistexp: arraylistexp'[' numexpression ']' | %empty;
+arraylistdecl: arraylistdecl'[' INT_C ']'        | %empty;
+arraylistexp:  arraylistexp'[' numexpression ']' | %empty;
 
 
 %%
-/* TODO: factor string_c, null, lvalue 
+/* TODO: factor string_c, null, lvalue
         | STRING_C                   { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
         | NUL                        { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
         | lvalue                     { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
@@ -140,7 +140,6 @@ int main(int argc, char **argv)
 #if YYDEBUG
     yydebug = 1;
 #endif
-    //!TODO: read file from argv
     Env::open_first_scope();
     yyparse();
     Env::close_scope();
@@ -153,7 +152,7 @@ void yyerror(const char *s)
     fprintf(stderr, "Error %d:%d: %s\n", yylloc.first_line, yylloc.first_column, s);
 }
 
-bool break_inside_for() 
+bool break_inside_for()
 {
     if (!Env::_stack.top()->is_inside_for()) {
         yyerror("Break is NOT inside for");
@@ -174,7 +173,7 @@ bool check_put(std::string id, int type){
 }
 
 
-// 
+//
 /*
 numexpression: numexpression '+' term   { $$ = new Node(Node::PLUS, $1, $3, Node::ValueType(0) ); }
     | numexpression '-' term            { $$ = new Node(Node::MINUS, $1, $3, Node::ValueType(0)); }
@@ -247,7 +246,7 @@ factor:   INT_C                      { $$ = new Node(Node::INTEGER, nullptr, nul
 //     token_map[STRING_C] = std::string("STRING_C");
 //     token_map[INT_C]    = std::string("INT_C");
 //     token_map[FLOAT_C]  = std::string("FLOAT_C");
-    
+
 //     token_map['('] = std::string("(");
 //     token_map[')'] = std::string(")");
 //     token_map['{'] = std::string("{");
@@ -263,5 +262,5 @@ factor:   INT_C                      { $$ = new Node(Node::INTEGER, nullptr, nul
 //     token_map['*'] = std::string("*");
 //     token_map['/'] = std::string("/");
 //     token_map['%'] = std::string("%");
-    
+
 // }

@@ -18,11 +18,10 @@ int yycolumn = 1;
 
 white               [ \t]+
 digit               [0-9]
- /* TODO: improve ident pattern */
 ident               [a-zA-Z_][a-zA-Z0-9_]*
 int_constant        {digit}+
 float_constant      {int_constant}(\.{int_constant})?
- /* Based of C-style strings; c.f. https://www.lysator.liu.se/c/ANSI-C-grammar-l.html */
+ /* Based on C-style strings; c.f. https://www.lysator.liu.se/c/ANSI-C-grammar-l.html */
 string_constant     \"([^\"\\]|\\.)*\"
 
 %%
