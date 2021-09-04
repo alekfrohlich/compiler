@@ -1,30 +1,43 @@
 %{
 #include <stdio.h>
-int yyerror(const char* s);
-int yylex(void);
+#include "instr.h"
+void yyerror(const char* s);
+unsigned yylex(void);
 %}
+%union {
+    int     ival;
+    Address* addrval;
+}
 
-%token NUM
+%token <ival> NUM
 %token ADD SUB MUL DIV
 %token EOL
 
+%nterm <addrval> factor term exp
 %%
 
 calclist:
-| calclist exp EOL  { printf("= %d\n", $2); }
+| calclist 'x' '=' exp EOL      {
+                                    Instruction::gen(IType::ASSIGN, $4, new Address(), new Symbol());
+                                    Instruction::emit();
+                                }
 ;
 
-exp: factor
- | exp ADD factor            { $$ = $1 + $3; }
- | exp SUB factor            { $$ = $1 - $3; }
+exp: term
+ |   exp ADD term               {
+                                    $$ = new Temp();
+                                    Instruction::gen(IType::PLUS, $1, $3, $$);
+                                }
  ;
 
-factor: term
- | factor MUL term           { $$ = $1 * $3; }
- | factor DIV term           { $$ = $1 / $3; }
+term: factor
+ |    term MUL factor           {
+                                    $$ = new Temp();
+                                    Instruction::gen(IType::TIMES, $1, $3, $$);
+                                }
  ;
 
-term: NUM { $$ = $1; };
+factor: NUM { $$ = new Constant($1); };
 
 %%
 
@@ -33,7 +46,7 @@ int main(int argc, char **argv)
     yyparse();
 }
 
-int yyerror(const char *s)
+void yyerror(const char *s)
 {
     fprintf(stderr, "erro: %s\n", s);
 }

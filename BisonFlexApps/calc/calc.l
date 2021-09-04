@@ -1,5 +1,6 @@
 %{
 #include <stdlib.h>
+#include "instr.h"
 #include "calc.tab.h"
 %}
 
@@ -10,13 +11,19 @@ integer     {digit}+
 %%
 
 {white}     { }
-{integer}   { yylval = atoi(yytext); return NUM; }
+{integer}   { yylval.ival = atoi(yytext); return NUM; }
 
 "+"         { return ADD; }
 "-"         { return SUB; }
 "*"         { return MUL; }
 "/"         { return DIV; }
+"x"         { return 'x'; }
+"="         { return '='; }
 
 "\n"        { return EOL; }
 
 %%
+
+int yywrap() {
+    return true;
+}
