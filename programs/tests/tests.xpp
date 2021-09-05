@@ -19,11 +19,11 @@ def j(int param1) {
     //coloca as attribs aqui nicolas
     var1 = 10;
     var2 = 3.1452;
-    // var3 = "lalala";
+    var3 = "lalala";
     // var4 = null;
     int var1copy;
     // var1copy = var1;
-    // var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
+    var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
     var6 = 2 < 2;
 
     // break;

@@ -1,0 +1,44 @@
+//17 numexpressions
+def j(int param1) {
+    int     vari1;
+    int     vari2;
+    int     vari3;
+    int     vari4;
+    int     vari5;
+    int     vari6;
+    int     vari7;
+    
+    float   varf1;
+    float   varf2;
+    
+    string  vars1;
+    string  vars2;
+
+    //coloca as attribs aqui nicolas
+    vari1 = 2 + 5 - (4*3/3) + 5 % 2;
+    varf1 = 2.0 + 5.0 - (4.0*3.0/3.0) + 5.0;
+    vars1 = "a" + "b";
+    vari2 = vari1 * 1 / 1;
+    vari3 = vari1 + vari2;
+    
+    {
+        float varft1;
+        varft1 = 3.3;
+        varft1 = varft1 * varf1 + 2.2;
+        
+        string varst1;
+        varst1 = "qwe";
+        vars1 = varst1 + vars1;
+    }
+    
+    vars2 = null;
+    varf2 = null;
+    vari5 = null;
+    
+    vars2 = vars2 + "ert" + vars1;
+    varf2 = varf2 / (1.0*(2.2-1.1))+ varf1;
+    vari2 = vari5;
+    
+    vari6 = +6;
+    vari6 = -7;
+}

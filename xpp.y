@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+#include <vector>
+#include <set>
+
 
 #include "ast.h"
 #include "env.h"
@@ -9,10 +12,15 @@
 void yyerror(const char* s);
 bool break_inside_for();
 bool check_put(std::string id, int type);
+bool check_expr_tree(Node * root);
+void check_expr_tree_rec(Node * root);
 // void create_token_map();
 // void list_tokens();
 
 unsigned yylex(void);
+
+std::vector<Node *> exprlist;
+std::set<int> exprTypes;
 
 //std::map<unsigned, std::string> token_map;
 
@@ -33,7 +41,8 @@ unsigned yylex(void);
 %token <sval> IDENT STRING_C
 %token <ival>  INT_C
 %token <fval> FLOAT_C
-//%nterm <nodeval> factor unaryexpr term numexpression
+%nterm <nodeval> factor unaryexpr term numexpression
+%nterm <sval> lvalue
 
  /* !TODO: enum? */
 %nterm <ival> type
@@ -90,50 +99,43 @@ elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); }
 
 forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
 
-allocexpression: NEW type '[' numexpression ']' arraylistexp;
+allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4)) YYABORT;} ']' arraylistexp;
 
-expression: numexpression
-    | numexpression CMP numexpression
+expression: numexpression               {if(!check_expr_tree($1)) YYABORT;}
+    | numexpression CMP numexpression   {if(!check_expr_tree($1)) YYABORT; if(!check_expr_tree($3)) YYABORT;}
 ;
 
-numexpression: numexpression '+' term
-    | numexpression '-' term
-    | term
+numexpression: numexpression '+' term { $$ = new Node(Node::PLUS,  $1, $3); }
+    | numexpression '-' term          { $$ = new Node(Node::MINUS, $1, $3); }
+    | term                            { $$ = $1; }
 ;
 
-term: term '*' unaryexpr
-    | term '/' unaryexpr
-    | term '%' unaryexpr
-    | unaryexpr
+term: term '*' unaryexpr              { $$ = new Node(Node::TIMES, $1, $3); }
+    | term '/' unaryexpr              { $$ = new Node(Node::DIV,   $1, $3); }
+    | term '%' unaryexpr              { $$ = new Node(Node::MOD,   $1, $3); }
+    | unaryexpr                       { $$ = $1; }
 ;
 
-unaryexpr: '+' factor
-    | '-' factor
-    | factor
+unaryexpr: '+' factor                 { $$ = new Node(Node::UPLUS,  $2, nullptr); }
+    | '-' factor                      { $$ = new Node(Node::UMINUS, $2, nullptr); }
+    | factor                          { $$ = $1; }
 ;
 
-factor:   INT_C
-        | FLOAT_C
-        | STRING_C
-        | NUL
-        | lvalue
-        | '(' numexpression ')'
+factor:   INT_C                       { $$ = new Node(Node::INTEGER, nullptr, nullptr, $1); }
+        | FLOAT_C                     { $$ = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
+        | STRING_C                    { $$ = new Node(Node::STRING,  nullptr, nullptr, $1); }
+        | NUL                         { $$ = new Node(Node::NUL,     nullptr, nullptr); }
+        | lvalue                      { $$ = new Node(Node::LVALUE,  nullptr, nullptr, $1); }
+        | '(' numexpression ')'       { $$ = $2; }
 ;
 
 lvalue: IDENT arraylistexp;
 
 arraylistdecl: arraylistdecl'[' INT_C ']'        | %empty;
-arraylistexp:  arraylistexp'[' numexpression ']' | %empty;
+arraylistexp:  arraylistexp'[' numexpression {if(!check_expr_tree($3)) YYABORT;} ']' | %empty;
 
 
 %%
-/* TODO: factor string_c, null, lvalue
-        | STRING_C                   { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
-        | NUL                        { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
-        | lvalue                     { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
-
-*/
-
 
 int main(int argc, char **argv)
 {
@@ -143,6 +145,15 @@ int main(int argc, char **argv)
     Env::open_first_scope();
     yyparse();
     Env::close_scope();
+    // printf("===========\n");
+    printf("Trees:\n");
+    for(auto it=exprlist.begin();it != exprlist.end();++it){
+        Node::print_tree(*it);
+    }
+    printf("numexpressions: OK - %lu\n", exprlist.size());
+    printf("variable declaration in the same scope: OK\n");
+    printf("break inside for: OK\n");
+    
     // create_token_map();
     // list_tokens();
 }
@@ -172,32 +183,51 @@ bool check_put(std::string id, int type){
     }
 }
 
+bool check_expr_tree(Node * root){
+    exprTypes.clear();
+    exprlist.push_back(root);
+    check_expr_tree_rec(root);
+    // printf("Check\n");
+    // printf("types:");
+    // for(auto it = exprTypes.begin(); it!=exprTypes.end();it++){
+    //     printf("%d; ", *it);
+    // }
+    // printf("\n");
+    if(exprTypes.size() > 1){
+        yyerror("Expr tree uses different types");
+        return false;
+    } else{
+        return true;
+    }
+}
+
+void check_expr_tree_rec(Node * root){
+    if(root->type == Node::NodeType::INTEGER ||
+       root->type == Node::NodeType::FLOAT   ||
+       root->type == Node::NodeType::STRING) {
+        exprTypes.insert(root->type);
+    }
+    if(root->type == Node::NodeType::LVALUE){
+        int lvtype = Env::get_type(std::string(root->val.sval));
+        if(lvtype == -1){
+            printf("Variable:%s was not declared!!!! We are not taking care of this!\n",
+            root->val.sval);
+        }else{
+            exprTypes.insert(lvtype);
+        }
+    }
+    if(root->l){
+        check_expr_tree_rec(root->l);
+    }
+    if(root->r){
+        check_expr_tree_rec(root->r);
+    }
+}
+
+
 
 //
-/*
-numexpression: numexpression '+' term   { $$ = new Node(Node::PLUS, $1, $3, Node::ValueType(0) ); }
-    | numexpression '-' term            { $$ = new Node(Node::MINUS, $1, $3, Node::ValueType(0)); }
-    | term                              { $$ = $1; }
-;
 
-term: term '*' unaryexpr    { $$ = new Node(Node::TIMES, $1, $3, Node::ValueType(0)); }
-    | term '/' unaryexpr    { $$ = new Node(Node::DIV, $1, $3, Node::ValueType(0)); }
-    | term '%' unaryexpr    { $$ = new Node(Node::MOD, $1, $3, Node::ValueType(0)); }
-    | unaryexpr             { $$ = $1; }
-;
-
-unaryexpr: '+' factor   { $$ = new Node(Node::UPLUS, $2, nullptr, Node::ValueType(0)); }
-    | '-' factor        { $$ = new Node(Node::UMINUS, $2, nullptr, Node::ValueType(0)); }
-    | factor            { $$ = $1; }
-;
-
-factor:   INT_C                      { $$ = new Node(Node::INTEGER, nullptr, nullptr, $1); }
-        | FLOAT_C                    { $$ = new Node(Node::FLOAT, nullptr, nullptr, $1); }
-        | lvalue                     { $$ = new Node(Node::INTEGER, nullptr, nullptr, Node::ValueType(0)); }
-        | '(' numexpression ')'      { $$ = $2; }
-;
-
-*/
 
 // void list_tokens() {
 //     for (unsigned tok = yylex(); tok != YYEOF; tok = yylex()) {

@@ -23,12 +23,12 @@ class Env {
 public:
 
     static void open_first_scope(int scope_type = 0) {
-        std::cout << "Opening Scope:" << std::endl;
+        // std::cout << "Opening Scope:" << std::endl;
         _stack.push(new Env(false));    
     }
     
     static void open_scope(int scope_type = 0) {
-        std::cout << "Opening Scope:" << std::endl;
+        // std::cout << "Opening Scope:" << std::endl;
         bool inside_for = scope_type == 1 || _stack.top()->is_inside_for();
         _stack.push(new Env(inside_for));    
     }
@@ -36,29 +36,29 @@ public:
     static void close_scope() { 
         Env * e = _stack.top();
         _stack.pop();
-        int ident = _stack.size();
-        std::cout << "Closing Scope:" << std::endl;
-        while (e) {
-            for(std::map<std::string,int>::iterator iter = e->_table.begin(); iter != e->_table.end(); ++iter)
-            {
-                std::string id = iter->first;
-                int type = iter->second;
-                for (int i = 0; i < ident; i++)
-                    std::cout << '\t';
-                std::cout << '{' << id << ',' << type << '}' << std::endl;
-            }
+        // int ident = _stack.size();
+        // std::cout << "Closing Scope:" << std::endl;
+        // while (e) {
+        //     for(std::map<std::string,int>::iterator iter = e->_table.begin(); iter != e->_table.end(); ++iter)
+        //     {
+        //         std::string id = iter->first;
+        //         int type = iter->second;
+        //         for (int i = 0; i < ident; i++)
+        //             std::cout << '\t';
+        //         std::cout << '{' << id << ',' << type << '}' << std::endl;
+        //     }
 
-            // iterate
-            ident--;
-            e = e->_prev;
-        }
+        //     // iterate
+        //     ident--;
+        //     e = e->_prev;
+        // }
     }
     
     static bool check_symbol_rec(std::string id){
         Env * e = _stack.top();
         while (e) {
             if (e->_table.find(id) != e->_table.end()) {
-                std::cout << id << std::endl;
+                // std::cout << id << std::endl;
                 return false;
             }
             e = e->_prev;
@@ -69,7 +69,7 @@ public:
     static bool check_symbol_top(std::string id){
         Env * e = _stack.top();
         if (e->_table.find(id) != e->_table.end()) {
-            std::cout << id << std::endl;
+            // std::cout << id << std::endl;
             return false;
         }
         return true;
@@ -83,8 +83,20 @@ public:
         return false;
     }
     
-    static void remove(std::string id) {}
-    static void get(std::string) {}
+    // static void remove(std::string id) {}
+    // static void get(std::string) {}
+    
+    static int get_type(std::string id) {
+        Env * e = _stack.top();
+        while (e) {
+            if (e->_table.find(id) != e->_table.end()) {
+                // std::cout << id << std::endl;
+                return e->_table[id];
+            }
+            e = e->_prev;
+        }
+        return -1;
+    }
         
     bool is_inside_for() {
         return _inside_for;
