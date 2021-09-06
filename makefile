@@ -20,4 +20,6 @@ clean:
 
 tests: run
 	./compiler < programs/tests/tests.xpp | grep --quiet --ignore-case "error" || true
+	./compiler < programs/tests/test_lex1.xpp | grep --quiet --ignore-case "error" || true
+	./compiler < programs/tests/test_syn1.xpp | grep --quiet --ignore-case "error" || true
 	./compiler < programs/zinho/testBreakErrado.ccc | grep --quiet --ignore-case "error" || true

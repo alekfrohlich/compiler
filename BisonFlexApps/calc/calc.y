@@ -7,10 +7,6 @@ unsigned yylex(void);
 %union {
     int      ival;
     Address* addrval;
-    // struct {
-    //     Address* addr;
-    //     Label    labl;
-    // } codgval;
 }
 
 %token <ival> NUM
@@ -18,7 +14,6 @@ unsigned yylex(void);
 %token EOL
 
 %nterm <addrval> factor term exp bexp
-// %nterm <codgval> bexp
 %%
 
 statlist:

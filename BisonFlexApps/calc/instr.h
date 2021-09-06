@@ -4,7 +4,6 @@
 #include <list>
 #include <map>
 #include <iostream>
-// #include <iomanip>
 
 using namespace std;
 
@@ -50,7 +49,7 @@ struct Label {
     int  line;
     Label(int l) : num(_num), line(l) { _num++; }
     static int get_num() { return _num; }
-    friend ostream& operator<<(ostream& os, Label& l) { return os << "L00" << l.num; }
+    friend ostream& operator<<(ostream& os, Label& l) { return os << "L00" << l.num; } // Only handles first 10 labels correctly
 private:
     static int _num;
 };
@@ -62,7 +61,7 @@ enum IType : unsigned {
     IFFALSE,
 };
 static const char* instr_name[] = {"add", "mul", "mov", "ifF"};
-// static const int ops[] = {2, 2, 1, 1};
+static const int ops[] = {2, 2, 1, 1};
 
 struct Instruction {
 
@@ -74,9 +73,9 @@ struct Instruction {
     // Labels are treated as constans
     Instruction(IType t, Address *a1) {
         type = t; arg1 = a1; arg2 = nullptr;
-        //!FIXME: line should be the line of the attached label and not the label number.
-        Label * l = new Label(Label::get_num());
-        _label_map.insert(pair<int,Label*>(Label::get_num(), l));
+        Label * l = new Label(_code.size());
+        //!FIXME: labels are currently at the same address as their goto's
+        _label_map.insert(pair<int,Label*>(_code.size(), l));
         result = new Constant(l->num);
     }
 
@@ -87,6 +86,7 @@ struct Instruction {
 
     friend ostream& operator<<(ostream& os, const Instruction& i) {
         switch(i.type) {
+            default:
             case PLUS:
             case TIMES:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.arg2 << ", " << *i.result;
@@ -112,7 +112,6 @@ struct Instruction {
 
         int size = _code.size();
         for (int i = 0; i < size; i++) {
-            // Set width of the ostream
             auto l = _label_map.find(i);
             if (l != _label_map.end()) {
                 cout << *(l->second) << ": ";

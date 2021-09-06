@@ -31,6 +31,10 @@ std::set<int> exprTypes;
     char*           sval;
     int             ival;
     double          fval;
+    struct {
+        Node*    node;
+        // Address* addr;
+    }               expval;
     Node *          nodeval;
 }
 
@@ -41,7 +45,7 @@ std::set<int> exprTypes;
 %token <sval> IDENT STRING_C
 %token <ival>  INT_C
 %token <fval> FLOAT_C
-%nterm <nodeval> factor unaryexpr term numexpression
+%nterm <expval> factor unaryexpr term numexpression
 %nterm <sval> lvalue
 
  /* !TODO: enum? */
@@ -99,40 +103,40 @@ elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); }
 
 forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
 
-allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4)) YYABORT;} ']' arraylistexp;
+allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
 
-expression: numexpression               {if(!check_expr_tree($1)) YYABORT;}
-    | numexpression CMP numexpression   {if(!check_expr_tree($1)) YYABORT; if(!check_expr_tree($3)) YYABORT;}
+expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT;}
+    | numexpression CMP numexpression   {if(!check_expr_tree($1.node)) YYABORT; if(!check_expr_tree($3.node)) YYABORT;}
 ;
 
-numexpression: numexpression '+' term { $$ = new Node(Node::PLUS,  $1, $3); }
-    | numexpression '-' term          { $$ = new Node(Node::MINUS, $1, $3); }
-    | term                            { $$ = $1; }
+numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); }
+    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); }
+    |          term                   { $$.node = $1.node; }
 ;
 
-term: term '*' unaryexpr              { $$ = new Node(Node::TIMES, $1, $3); }
-    | term '/' unaryexpr              { $$ = new Node(Node::DIV,   $1, $3); }
-    | term '%' unaryexpr              { $$ = new Node(Node::MOD,   $1, $3); }
-    | unaryexpr                       { $$ = $1; }
+term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); }
+    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); }
+    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); }
+    | unaryexpr                       { $$.node = $1.node; }
 ;
 
-unaryexpr: '+' factor                 { $$ = new Node(Node::UPLUS,  $2, nullptr); }
-    | '-' factor                      { $$ = new Node(Node::UMINUS, $2, nullptr); }
-    | factor                          { $$ = $1; }
+unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); }
+    |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); }
+    |      factor                     { $$.node = $1.node; }
 ;
 
-factor:   INT_C                       { $$ = new Node(Node::INTEGER, nullptr, nullptr, $1); }
-        | FLOAT_C                     { $$ = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
-        | STRING_C                    { $$ = new Node(Node::STRING,  nullptr, nullptr, $1); }
-        | NUL                         { $$ = new Node(Node::NUL,     nullptr, nullptr); }
-        | lvalue                      { $$ = new Node(Node::LVALUE,  nullptr, nullptr, $1); }
-        | '(' numexpression ')'       { $$ = $2; }
+factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullptr, nullptr, $1); }
+        | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
+        | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); }
+        | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr); }
+        | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1); }
+        | '(' numexpression ')'       { $$.node = $2.node; }
 ;
 
 lvalue: IDENT arraylistexp;
 
 arraylistdecl: arraylistdecl'[' INT_C ']'        | %empty;
-arraylistexp:  arraylistexp'[' numexpression {if(!check_expr_tree($3)) YYABORT;} ']' | %empty;
+arraylistexp:  arraylistexp'[' numexpression {if(!check_expr_tree($3.node)) YYABORT;} ']' | %empty;
 
 
 %%
@@ -153,7 +157,7 @@ int main(int argc, char **argv)
     printf("numexpressions: OK - %lu\n", exprlist.size());
     printf("variable declaration in the same scope: OK\n");
     printf("break inside for: OK\n");
-    
+
     // create_token_map();
     // list_tokens();
 }
