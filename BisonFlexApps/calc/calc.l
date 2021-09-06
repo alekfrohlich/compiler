@@ -10,6 +10,8 @@ integer     {digit}+
 
 %%
 
+"if"        { return IF; }
+
 {white}     { }
 {integer}   { yylval.ival = atoi(yytext); return NUM; }
 
@@ -19,6 +21,10 @@ integer     {digit}+
 "/"         { return DIV; }
 "x"         { return 'x'; }
 "="         { return '='; }
+"("         { return '('; }
+")"         { return ')'; }
+"{"         { return '{'; }
+"}"         { return '}'; }
 
 "\n"        { return EOL; }
 

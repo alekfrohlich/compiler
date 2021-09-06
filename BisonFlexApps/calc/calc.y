@@ -5,23 +5,40 @@ void yyerror(const char* s);
 unsigned yylex(void);
 %}
 %union {
-    int     ival;
+    int      ival;
     Address* addrval;
+    // struct {
+    //     Address* addr;
+    //     Label    labl;
+    // } codgval;
 }
 
 %token <ival> NUM
-%token ADD SUB MUL DIV
+%token ADD SUB MUL DIV IF
 %token EOL
 
-%nterm <addrval> factor term exp
+%nterm <addrval> factor term exp bexp
+// %nterm <codgval> bexp
 %%
 
-calclist:
-| calclist 'x' '=' exp EOL      {
-                                    Instruction::gen(IType::ASSIGN, $4, new Address(), new Symbol());
+statlist:
+ | statlist statement EOL
+;
+
+statement: assignstat
+ | ifstat
+;
+
+ifstat: IF '(' bexp ')' { Instruction::gen(IType::IFFALSE, $3); } '{' statement '}'
+;
+
+assignstat: 'x' '=' exp         {
+                                    Instruction::gen(IType::ASSIGN, $3, new Symbol());
                                     Instruction::emit();
                                 }
 ;
+
+bexp: exp;
 
 exp: term
  |   exp ADD term               {
