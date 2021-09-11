@@ -19,6 +19,9 @@ void check_expr_tree_rec(Node * root);
 // void list_tokens();
 
 //!TODO: Generalize Constant
+//!TODO: What about else?
+//!TODO: Fix labels
+
 unsigned yylex(void);
 
 vector<Node *> exprlist;
@@ -42,9 +45,9 @@ set<int> exprTypes;
 
  /* Tokens */
 %token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE FOR NEW NUL
-%token CMP
+%token <ival> CMP
 %token <sval> IDENT STRING_C
-%token <ival>  INT_C
+%token <ival> INT_C
 %token <fval> FLOAT_C
 
 /* Variables */
@@ -98,7 +101,7 @@ paramlistcall: IDENT ',' paramlistcall
 printstat: PRINT expression;
 readstat:  READ  lvalue;
 
-ifstat:   IF '(' expression ')' { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
+ifstat:   IF '(' expression ')' { gen(IType::IFFALSE, $3.addr); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
 elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); }
         | %empty;
 
@@ -106,8 +109,20 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1)
 
 allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
 
-expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT; $$.addr = $1.addr; }
-    | numexpression CMP numexpression   {if(!check_expr_tree($1.node)) YYABORT; if(!check_expr_tree($3.node)) YYABORT;}
+expression: numexpression               { if(!check_expr_tree($1.node)) YYABORT; $$.addr = $1.addr; }
+    | numexpression CMP numexpression   {
+                                            if(!check_expr_tree($1.node)) YYABORT;
+                                            if(!check_expr_tree($3.node)) YYABORT;
+                                            $$.addr = new Temp();
+                                            switch ($2) {
+                                                case 0: gen(IType::LT , $1.addr, $3.addr, $$.addr); break;
+                                                case 1: gen(IType::GT , $1.addr, $3.addr, $$.addr); break;
+                                                case 2: gen(IType::LTE, $1.addr, $3.addr, $$.addr); break;
+                                                case 3: gen(IType::GTE, $1.addr, $3.addr, $$.addr); break;
+                                                case 4: gen(IType::EQ , $1.addr, $3.addr, $$.addr); break;
+                                                case 5: gen(IType::NEQ, $1.addr, $3.addr, $$.addr); break;
+                                            }
+                                        }
 ;
 
 numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); $$.addr = new Temp(); gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
@@ -130,7 +145,7 @@ factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullpt
         | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
         | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); }
         | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr); }
-        | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1); }
+        | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1); $$.addr = Env::get_symbol($1); }
         | '(' numexpression ')'       { $$.node = $2.node; $$.addr = $2.addr; }
 ;
 

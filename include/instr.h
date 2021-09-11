@@ -59,8 +59,14 @@ enum IType : unsigned {
     UPLUS,
     UMINUS,
     IFFALSE,
+    LT,
+    GT,
+    LTE,
+    GTE,
+    EQ,
+    NEQ,
 };
-static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF"};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF", "lt", "gt", "lte", "gte", "eq", "neq"};
 // static const int ops[] = {2, 2, 1, 1};
 
 struct Instruction {
@@ -92,6 +98,12 @@ struct Instruction {
             case TIMES:
             case DIV:
             case MOD:
+            case LT:
+            case GT:
+            case LTE:
+            case GTE:
+            case EQ:
+            case NEQ:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.arg2 << ", " << *i.result;
             case ASSIGN:
             case UPLUS:
@@ -107,9 +119,9 @@ struct Instruction {
     friend void gen(IType t, Address *a1);
 
     static void emit() {
-        cout << "Emitting ..." << endl;
-
         int size = _code.size();
+        cout << "Emitting " << size << " instructions ..." << endl;
+
         for (int i = 0; i < size; i++) {
             auto l = _label_map.find(i);
             if (l != _label_map.end()) {

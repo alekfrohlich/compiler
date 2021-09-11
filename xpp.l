@@ -55,12 +55,12 @@ null                { return NUL;       }
 "="                 { return '=';  }
 
     /* Operators */
-"<"                 { return CMP;   }
-">"                 { return CMP;   }
-"<="                { return CMP;   }
-">="                { return CMP;   }
-"=="                { return CMP;   }
-"!="                { return CMP;   }
+"<"                 { yylval.ival = 0; return CMP;   }
+">"                 { yylval.ival = 1; return CMP;   }
+"<="                { yylval.ival = 2; return CMP;   }
+">="                { yylval.ival = 3; return CMP;   }
+"=="                { yylval.ival = 4; return CMP;   }
+"!="                { yylval.ival = 5; return CMP;   }
 "+"                 { return '+';  }
 "-"                 { return '-';  }
 "*"                 { return '*';  }
