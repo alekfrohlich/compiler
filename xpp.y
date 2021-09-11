@@ -12,7 +12,7 @@
 
 void yyerror(const char* s);
 bool break_inside_for();
-bool check_put(std::string id, int type);
+bool check_put(string id, int type);
 bool check_expr_tree(Node * root);
 void check_expr_tree_rec(Node * root);
 // void create_token_map();
@@ -21,10 +21,10 @@ void check_expr_tree_rec(Node * root);
 //!TODO: Generalize Constant
 unsigned yylex(void);
 
-std::vector<Node *> exprlist;
-std::set<int> exprTypes;
+vector<Node *> exprlist;
+set<int> exprTypes;
 
-//std::map<unsigned, std::string> token_map;
+//map<unsigned, string> token_map;
 
 %}
 %locations
@@ -53,19 +53,19 @@ std::set<int> exprTypes;
 %nterm <ival> type
 %%
 
-program: statement {  }
-        | funclist {  }
+program: statement { Instruction::emit(); }
+        | funclist { Instruction::emit(); }
         | %empty
 ;
 
 funclist: funcdef funclist | funcdef;
-funcdef: DEF IDENT                      { if(!check_put(std::string($2), SymType::T_FUNC)) YYABORT; Env::open_scope();}
+funcdef: DEF IDENT                      { if(!check_put(string($2), SymType::T_FUNC)) YYABORT; Env::open_scope();}
                   '(' paramlist ')' '{' { Env::open_scope(); }
                       statelist '}'     { Env::close_scope(); Env::close_scope(); }
 ;
 
-paramlist: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } ',' paramlist
-        |  type IDENT { if(!check_put(std::string($2), $1)) YYABORT; }
+paramlist: type IDENT { if(!check_put(string($2), $1)) YYABORT; } ',' paramlist
+        |  type IDENT { if(!check_put(string($2), $1)) YYABORT; }
         |  %empty
 ;
 type: INT { $$ = 0; } | FLOAT { $$ = 1; } | STRING { $$ = 2; };
@@ -83,8 +83,8 @@ statement: vardecl ';'
         |  ';'
 ;
 
-vardecl: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } arraylistdecl;
-atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1); Instruction::gen(IType::ASSIGN, $3.addr, s); Instruction::emit(); }
+vardecl: type IDENT { if(!check_put(string($2), $1)) YYABORT; } arraylistdecl;
+atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1); gen(IType::ASSIGN, $3.addr, s); }
          | lvalue '=' allocexpression
          | lvalue '=' funccall
 ;
@@ -110,19 +110,19 @@ expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT; 
     | numexpression CMP numexpression   {if(!check_expr_tree($1.node)) YYABORT; if(!check_expr_tree($3.node)) YYABORT;}
 ;
 
-numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
-    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::MINUS, $1.addr, $3.addr, $$.addr); }
+numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); $$.addr = new Temp(); gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
+    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); $$.addr = new Temp(); gen(IType::MINUS, $1.addr, $3.addr, $$.addr); }
     |          term                   { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
-term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
-    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::DIV, $1.addr, $3.addr, $$.addr); }
-    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::MOD, $1.addr, $3.addr, $$.addr); }
+term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); $$.addr = new Temp(); gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
+    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); $$.addr = new Temp(); gen(IType::DIV, $1.addr, $3.addr, $$.addr); }
+    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); $$.addr = new Temp(); gen(IType::MOD, $1.addr, $3.addr, $$.addr); }
     | unaryexpr                       { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
-unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); $$.addr = new Temp(); Instruction::gen(IType::UPLUS, $2.addr, $$.addr); }
-    |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); $$.addr = new Temp(); Instruction::gen(IType::UMINUS, $2.addr, $$.addr); }
+unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); $$.addr = new Temp(); gen(IType::UPLUS, $2.addr, $$.addr); }
+    |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); $$.addr = new Temp(); gen(IType::UMINUS, $2.addr, $$.addr); }
     |      factor                     { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
@@ -179,7 +179,7 @@ bool break_inside_for()
     }
 }
 
-bool check_put(std::string id, int type){
+bool check_put(string id, int type){
     if(!Env::check_put(id, type)) {
         yyerror("Symbol already exists");
         return false;
@@ -213,7 +213,7 @@ void check_expr_tree_rec(Node * root){
         exprTypes.insert(root->type);
     }
     if(root->type == Node::NodeType::LVALUE){
-        int lvtype = Env::get_type(std::string(root->val.sval));
+        int lvtype = Env::get_type(string(root->val.sval));
         if(lvtype == -1){
             printf("Variable:%s was not declared!!!! We are not taking care of this!\n",
             root->val.sval);
@@ -258,39 +258,39 @@ void check_expr_tree_rec(Node * root){
 // void create_token_map()
 // {
 //     int c = DEF;
-//     token_map[DEF]      = std::string("DEF");
-//     token_map[INT]      = std::string("INT");
-//     token_map[FLOAT]    = std::string("FLOAT");
-//     token_map[STRING]   = std::string("STRING");
-//     token_map[BREAK]    = std::string("BREAK");
-//     token_map[PRINT]    = std::string("PRINT");
-//     token_map[READ]     = std::string("READ");
-//     token_map[RETURN]   = std::string("RETURN");
-//     token_map[IF]       = std::string("IF");
-//     token_map[ELSE]     = std::string("ELSE");
-//     token_map[FOR]      = std::string("FOR");
-//     token_map[NEW]      = std::string("NEW");
-//     token_map[NUL]      = std::string("NUL");
-//     token_map[CMP]      = std::string("CMP");
-//     token_map[IDENT]    = std::string("IDENT");
-//     token_map[STRING_C] = std::string("STRING_C");
-//     token_map[INT_C]    = std::string("INT_C");
-//     token_map[FLOAT_C]  = std::string("FLOAT_C");
+//     token_map[DEF]      = string("DEF");
+//     token_map[INT]      = string("INT");
+//     token_map[FLOAT]    = string("FLOAT");
+//     token_map[STRING]   = string("STRING");
+//     token_map[BREAK]    = string("BREAK");
+//     token_map[PRINT]    = string("PRINT");
+//     token_map[READ]     = string("READ");
+//     token_map[RETURN]   = string("RETURN");
+//     token_map[IF]       = string("IF");
+//     token_map[ELSE]     = string("ELSE");
+//     token_map[FOR]      = string("FOR");
+//     token_map[NEW]      = string("NEW");
+//     token_map[NUL]      = string("NUL");
+//     token_map[CMP]      = string("CMP");
+//     token_map[IDENT]    = string("IDENT");
+//     token_map[STRING_C] = string("STRING_C");
+//     token_map[INT_C]    = string("INT_C");
+//     token_map[FLOAT_C]  = string("FLOAT_C");
 
-//     token_map['('] = std::string("(");
-//     token_map[')'] = std::string(")");
-//     token_map['{'] = std::string("{");
-//     token_map['}'] = std::string("}");
-//     token_map['['] = std::string("[");
-//     token_map[']'] = std::string("]");
-//     token_map['('] = std::string("(");
-//     token_map[';'] = std::string(";");
-//     token_map[','] = std::string(",");
-//     token_map['='] = std::string("=");
-//     token_map['+'] = std::string("+");
-//     token_map['-'] = std::string("-");
-//     token_map['*'] = std::string("*");
-//     token_map['/'] = std::string("/");
-//     token_map['%'] = std::string("%");
+//     token_map['('] = string("(");
+//     token_map[')'] = string(")");
+//     token_map['{'] = string("{");
+//     token_map['}'] = string("}");
+//     token_map['['] = string("[");
+//     token_map[']'] = string("]");
+//     token_map['('] = string("(");
+//     token_map[';'] = string(";");
+//     token_map[','] = string(",");
+//     token_map['='] = string("=");
+//     token_map['+'] = string("+");
+//     token_map['-'] = string("-");
+//     token_map['*'] = string("*");
+//     token_map['/'] = string("/");
+//     token_map['%'] = string("%");
 
 // }

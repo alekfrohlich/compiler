@@ -102,15 +102,9 @@ struct Instruction {
         }
     }
 
-    static void gen(IType t, Address *a1, Address *a2, Address *r) {
-        _code.push_back(Instruction(t,a1,a2,r));
-    }
-    static void gen(IType t, Address *a1, Address *r) {
-        _code.push_back(Instruction(t,a1,r));
-    }
-    static void gen(IType t, Address *a1) {
-        _code.push_back(Instruction(t,a1));
-    }
+    friend void gen(IType t, Address *a1, Address *a2, Address *r);
+    friend void gen(IType t, Address *a1, Address *r);
+    friend void gen(IType t, Address *a1);
 
     static void emit() {
         cout << "Emitting ..." << endl;
@@ -133,5 +127,9 @@ private:
     static list<Instruction> _code;
     static map<int, Label*> _label_map;
 };
+
+void gen(IType t, Address *a1, Address *a2, Address *r);
+void gen(IType t, Address *a1, Address *r);
+void gen(IType t, Address *a1);
 
 #endif
