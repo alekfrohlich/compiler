@@ -2,16 +2,17 @@
 CPP		:= env.cc instr.cc
 LY		:= xpp.l xpp.y
 DEPS 	:= $(CPP) $(LY)
+FLAGS	:= -Iinclude
 
 run: $(DEPS)
 	flex xpp.l
 	bison -d xpp.y
-	g++ xpp.tab.c lex.yy.c $(CPP) -o compiler
+	g++ $(FLAGS) xpp.tab.c lex.yy.c $(CPP) -o compiler
 
 debug: $(DEPS)
 	flex xpp.l
 	bison -d --debug xpp.y
-	g++ xpp.tab.c lex.yy.c $(CPP) -o compiler
+	g++ $(FLAGS) xpp.tab.c lex.yy.c $(CPP) -o compiler
 
 .PHONY: clean tests
 clean:
