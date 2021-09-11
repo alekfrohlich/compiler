@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string>
+
 #include "ast.h"
+#include "instr.h"
 #include "xpp.tab.h"
+
 int yycolumn = 1;
 #define YY_USER_ACTION \
     yylloc.first_line = yylloc.last_line = yylineno;                           \

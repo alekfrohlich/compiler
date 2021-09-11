@@ -1,5 +1,5 @@
 
-CPP		:= env.cc
+CPP		:= env.cc instr.cc
 LY		:= xpp.l xpp.y
 DEPS 	:= $(CPP) $(LY)
 
