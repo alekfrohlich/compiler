@@ -18,6 +18,7 @@ void check_expr_tree_rec(Node * root);
 // void create_token_map();
 // void list_tokens();
 
+//!TODO: Generalize Constant
 unsigned yylex(void);
 
 std::vector<Node *> exprlist;
@@ -45,10 +46,10 @@ std::set<int> exprTypes;
 %token <sval> IDENT STRING_C
 %token <ival>  INT_C
 %token <fval> FLOAT_C
+
+/* Variables */
 %nterm <expval> factor unaryexpr term numexpression expression
 %nterm <sval> lvalue
-
- /* !TODO: enum? */
 %nterm <ival> type
 %%
 
@@ -83,7 +84,7 @@ statement: vardecl ';'
 ;
 
 vardecl: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } arraylistdecl;
-atribstat: lvalue '=' expression { printf($1); Instruction::emit(); }
+atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1); Instruction::gen(IType::ASSIGN, $3.addr, s); Instruction::emit(); }
          | lvalue '=' allocexpression
          | lvalue '=' funccall
 ;
@@ -110,18 +111,18 @@ expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT; 
 ;
 
 numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
-    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
+    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::MINUS, $1.addr, $3.addr, $$.addr); }
     |          term                   { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
 term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
-    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
-    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
+    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::DIV, $1.addr, $3.addr, $$.addr); }
+    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::MOD, $1.addr, $3.addr, $$.addr); }
     | unaryexpr                       { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
-unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); }
-    |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); }
+unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); $$.addr = new Temp(); Instruction::gen(IType::UPLUS, $2.addr, $$.addr); }
+    |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); $$.addr = new Temp(); Instruction::gen(IType::UMINUS, $2.addr, $$.addr); }
     |      factor                     { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
@@ -169,7 +170,7 @@ void yyerror(const char *s)
 
 bool break_inside_for()
 {
-    if (!Env::_stack.top()->is_inside_for()) {
+    if (Env::is_inside_for()) {
         yyerror("Break is NOT inside for");
         return false;
     } else {
@@ -227,11 +228,6 @@ void check_expr_tree_rec(Node * root){
         check_expr_tree_rec(root->r);
     }
 }
-
-
-
-//
-
 
 // void list_tokens() {
 //     for (unsigned tok = yylex(); tok != YYEOF; tok = yylex()) {

@@ -5,14 +5,9 @@
 #include <map>
 #include <iostream>
 
-using namespace std;
+#include "address.h"
 
-struct Address {
-    virtual ostream& print(ostream & os) { return os << "addr"; }
-    friend  ostream& operator<<(ostream& os, Address& a) {
-        return a.print(os);
-    }
-};
+using namespace std;
 
 struct Constant : public Address {
 
@@ -38,11 +33,11 @@ private:
     static int _num;
 };
 
-struct Symbol : public Address {
-    virtual ostream& print(ostream& os) {
-        return os << "x";
-    }
-};
+// struct Symbol : public Address {
+//     virtual ostream& print(ostream& os) {
+//         return os << "x";
+//     }
+// };
 
 struct Label {
     int  num;
@@ -56,20 +51,25 @@ private:
 
 enum IType : unsigned {
     PLUS = 0,
+    MINUS,
     TIMES,
+    DIV,
+    MOD,
     ASSIGN,
+    UPLUS,
+    UMINUS,
     IFFALSE,
 };
-static const char* instr_name[] = {"add", "mul", "mov", "ifF"};
-static const int ops[] = {2, 2, 1, 1};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF"};
+// static const int ops[] = {2, 2, 1, 1};
 
 struct Instruction {
 
-    // For instructions with three operands: add, sub, mul, div,
+    // For instructions with three operands: add, sub, mul, div, mod
     Instruction(IType t, Address *a1, Address *a2, Address *r) : type(t), arg1(a1), arg2(a2), result(r) {}
-    // For instructions with two operands or with labels: uminus, assign
+    // For instructions with two operands or with labels: uplus, uminus, mov
     Instruction(IType t, Address *a1, Address *r) : type(t), arg1(a1), arg2(nullptr), result(r) {}
-    // For instructions with labels:
+    // For instructions with labels: ifF
     // Labels are treated as constans
     Instruction(IType t, Address *a1) {
         type = t; arg1 = a1; arg2 = nullptr;
@@ -88,9 +88,14 @@ struct Instruction {
         switch(i.type) {
             default:
             case PLUS:
+            case MINUS:
             case TIMES:
+            case DIV:
+            case MOD:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.arg2 << ", " << *i.result;
             case ASSIGN:
+            case UPLUS:
+            case UMINUS:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.result;
             case IFFALSE:
                 return os << "ifF " << *i.arg1 << " goto L" << *i.result;
