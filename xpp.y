@@ -8,6 +8,7 @@
 
 #include "ast.h"
 #include "env.h"
+#include "instr.h"
 
 void yyerror(const char* s);
 bool break_inside_for();
@@ -33,19 +34,18 @@ std::set<int> exprTypes;
     double          fval;
     struct {
         Node*    node;
-        // Address* addr;
+        Address* addr;
     }               expval;
     Node *          nodeval;
 }
 
  /* Tokens */
-
 %token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE FOR NEW NUL
 %token CMP
 %token <sval> IDENT STRING_C
 %token <ival>  INT_C
 %token <fval> FLOAT_C
-%nterm <expval> factor unaryexpr term numexpression
+%nterm <expval> factor unaryexpr term numexpression expression
 %nterm <sval> lvalue
 
  /* !TODO: enum? */
@@ -83,7 +83,7 @@ statement: vardecl ';'
 ;
 
 vardecl: type IDENT { if(!check_put(std::string($2), $1)) YYABORT; } arraylistdecl;
-atribstat: lvalue '=' expression
+atribstat: lvalue '=' expression { printf($1); Instruction::emit(); }
          | lvalue '=' allocexpression
          | lvalue '=' funccall
 ;
@@ -105,32 +105,32 @@ forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1)
 
 allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
 
-expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT;}
+expression: numexpression               {if(!check_expr_tree($1.node)) YYABORT; $$.addr = $1.addr; }
     | numexpression CMP numexpression   {if(!check_expr_tree($1.node)) YYABORT; if(!check_expr_tree($3.node)) YYABORT;}
 ;
 
-numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); }
-    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); }
-    |          term                   { $$.node = $1.node; }
+numexpression: numexpression '+' term { $$.node = new Node(Node::PLUS,  $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
+    |          numexpression '-' term { $$.node = new Node(Node::MINUS, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::PLUS, $1.addr, $3.addr, $$.addr); }
+    |          term                   { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
-term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); }
-    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); }
-    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); }
-    | unaryexpr                       { $$.node = $1.node; }
+term: term '*' unaryexpr              { $$.node = new Node(Node::TIMES, $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
+    | term '/' unaryexpr              { $$.node = new Node(Node::DIV,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
+    | term '%' unaryexpr              { $$.node = new Node(Node::MOD,   $1.node, $3.node); $$.addr = new Temp(); Instruction::gen(IType::TIMES, $1.addr, $3.addr, $$.addr); }
+    | unaryexpr                       { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
 unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node, nullptr); }
     |      '-' factor                 { $$.node = new Node(Node::UMINUS, $2.node, nullptr); }
-    |      factor                     { $$.node = $1.node; }
+    |      factor                     { $$.node = $1.node; $$.addr = $1.addr; }
 ;
 
-factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullptr, nullptr, $1); }
+factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullptr, nullptr, $1); $$.addr = new Constant($1); }
         | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
         | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); }
         | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr); }
         | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1); }
-        | '(' numexpression ')'       { $$.node = $2.node; }
+        | '(' numexpression ')'       { $$.node = $2.node; $$.addr = $2.addr; }
 ;
 
 lvalue: IDENT arraylistexp;
