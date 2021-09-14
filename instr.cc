@@ -22,6 +22,9 @@ void gen(IType t, Address *a1, int label_num) {
 void gen(IType t, int label_num) {
     _code.push_back(Instruction(t,nullptr,nullptr,new Constant(label_num)));
 }
+void gen(IType t) {
+    _code.push_back(Instruction(t,nullptr,nullptr,nullptr));
+}
 
 void emit_code() {
     int size = _code.size();

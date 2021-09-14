@@ -19,7 +19,6 @@ void check_expr_tree_rec(Node * root);
 // void list_tokens();
 
 //!TODO: Generalize Constant
-//!TODO: What about else?
 //!TODO: Fix labels
 
 unsigned yylex(void);
@@ -78,7 +77,7 @@ statement: vardecl ';'
         |  atribstat ';'
         |  printstat ';'
         |  readstat ';'
-        |  RETURN ';'
+        |  RETURN ';' { gen(IType::RET); }
         |  ifstat
         |  forstat
         |  '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }

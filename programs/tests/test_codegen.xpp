@@ -35,6 +35,5 @@ def f() {
         z = 7;
     }
 
-    //placeholder
-    z = 10;
+    return;
 }
