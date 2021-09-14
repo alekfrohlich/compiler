@@ -56,8 +56,8 @@ set<int> exprTypes;
 %nterm <ival> type
 %%
 
-program: statement { Instruction::emit(); }
-        | funclist { Instruction::emit(); }
+program: statement { emit_code(); }
+        | funclist { emit_code(); }
         | %empty
 ;
 
@@ -101,9 +101,10 @@ paramlistcall: IDENT ',' paramlistcall
 printstat: PRINT expression;
 readstat:  READ  lvalue;
 
-ifstat:   IF '(' expression ')' { gen(IType::IFFALSE, $3.addr); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
-elsestat: ELSE { Env::open_scope(); } '{' statelist '}' { Env::close_scope(); }
-        | %empty;
+ifstat:   IF '(' expression ')' { gen(IType::IFFALSE, $3.addr, make_label()); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
+elsestat: ELSE   { attach_label(1); gen(IType::GOTO, make_label()); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); attach_label(); }
+        | %empty { attach_label(); }
+;
 
 forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
 

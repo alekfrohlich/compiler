@@ -1,8 +1,6 @@
 #ifndef INSTR_H
 #define INSTR_H
 
-#include <list>
-#include <map>
 #include <iostream>
 
 #include "address.h"
@@ -59,6 +57,7 @@ enum IType : unsigned {
     UPLUS,
     UMINUS,
     IFFALSE,
+    GOTO,
     LT,
     GT,
     LTE,
@@ -66,24 +65,28 @@ enum IType : unsigned {
     EQ,
     NEQ,
 };
-static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF", "lt", "gt", "lte", "gte", "eq", "neq"};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq"};
 // static const int ops[] = {2, 2, 1, 1};
 
 struct Instruction {
 
     // For instructions with three operands: add, sub, mul, div, mod
     Instruction(IType t, Address *a1, Address *a2, Address *r) : type(t), arg1(a1), arg2(a2), result(r) {}
-    // For instructions with two operands or with labels: uplus, uminus, mov
-    Instruction(IType t, Address *a1, Address *r) : type(t), arg1(a1), arg2(nullptr), result(r) {}
+    // For instructions with two operands: uplus, uminus, mov
+    // Instruction(IType t, Address *a1, Address *r) : type(t), arg1(a1), arg2(nullptr), result(r) {}
     // For instructions with labels: ifF
-    // Labels are treated as constans
-    Instruction(IType t, Address *a1) {
-        type = t; arg1 = a1; arg2 = nullptr;
-        Label * l = new Label(_code.size());
-        //!FIXME: labels are currently at the same address as their goto's
-        _label_map.insert(pair<int,Label*>(_code.size(), l));
-        result = new Constant(l->num);
-    }
+    // Labels are treated as constants
+    // Instruction(IType t, Address *a1, int label_num) {
+    //     type = t; arg1 = a1; arg2 = nullptr;
+    //     Label * l = new Label(_code.size());
+    //     //!FIXME: labels are currently at the same address as their goto's
+    //     _label_map.insert(pair<int,Label*>(_code.size(), l));
+    //     result = new Constant(l->num);
+    // }
+    // Instruction(IType t, Address *a1, int label_num) {
+    //     type = t; arg1 = a1; arg2 = nullptr;
+    //     result = new Constant(label_num);
+    // }
 
     IType type;
     Address* arg1;
@@ -111,37 +114,61 @@ struct Instruction {
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.result;
             case IFFALSE:
                 return os << "ifF " << *i.arg1 << " goto L" << *i.result;
+            case GOTO:
+                return os << "goto L" << *i.result;
         }
     }
 
-    friend void gen(IType t, Address *a1, Address *a2, Address *r);
-    friend void gen(IType t, Address *a1, Address *r);
-    friend void gen(IType t, Address *a1);
+    // friend void gen(IType t, Address *a1, Address *a2, Address *r);
+    // friend void gen(IType t, Address *a1, Address *r);
+    // friend void gen(IType t, Address *a1, int label_num);
+    // friend void gen(IType t, int label_num);
+    // friend void
 
-    static void emit() {
-        int size = _code.size();
-        cout << "Emitting " << size << " instructions ..." << endl;
+    // static void emit() {
+    //     int size = _code.size();
+    //     cout << "Emitting " << size << " instructions ..." << endl;
 
-        for (int i = 0; i < size; i++) {
-            auto l = _label_map.find(i);
-            if (l != _label_map.end()) {
-                cout << *(l->second) << ": ";
-            } else {
-                cout << "      ";
-            }
-            cout << i << ") " << _code.front() << endl;
-            _code.pop_front();
-        }
-    }
+    //     for (int i = 0; i < size; i++) {
+    //         auto l = _label_map.find(i);
+    //         if (l != _label_map.end()) {
+    //             cout << *(l->second) << ": ";
+    //         } else {
+    //             cout << "      ";
+    //         }
+    //         cout << i << ") " << _code.front() << endl;
+    //         _code.pop_front();
+    //     }
+    // }
+
+    // static int make_label() {
+    //     Label * l = new Label(-1); // will be patched latter
+    //     _label_stack.push(l);
+    //     return l->num;
+    // }
+
+    // // If the next line in the generated code is K, then attach the top most label
+    // // to the line K+shift.
+    // static void attach_label(int shift=0) {
+    //     Label * l = _label_stack.top();
+    //     _label_stack.pop();
+    //     l->line = _code.size() + shift;
+    //     _label_map.insert(pair<int,Label*>(l->line, l));
+    // }
 
 
 private:
-    static list<Instruction> _code;
-    static map<int, Label*> _label_map;
+    // static list<Instruction> _code;
+    // static map<int, Label*> _label_map; //!TODO: what about multiple labels in the same line?
+    // static stack<Label*> _label_stack;
 };
 
 void gen(IType t, Address *a1, Address *a2, Address *r);
 void gen(IType t, Address *a1, Address *r);
-void gen(IType t, Address *a1);
+void gen(IType t, Address *a1, int label_num);
+void gen(IType t, int label_num);
+void emit_code();
+int  make_label();
+void attach_label(int shift=0);
 
 #endif
