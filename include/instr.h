@@ -161,19 +161,24 @@ struct Instruction {
             case GTE:
             case EQ:
             case NEQ:
+            if(i.arg1==nullptr || i.arg2==nullptr || i.result==nullptr) return os << "var not declared!!!";
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.arg2 << ", " << *i.result;
             case ASSIGN:
             case CALL:
             case UPLUS:
             case UMINUS:
+                if(i.arg1==nullptr || i.result==nullptr) return os << "var not declared!!!";
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.result;
             case IFFALSE:
+                if(i.arg1==nullptr || i.result==nullptr) return os << "var not declared!!!";
                 return os << "ifF " << *i.arg1 << " goto L" << *i.result;
             case GOTO:
+                if(i.result==nullptr) return os << "var not declared!!!";
                 return os << "goto L" << *i.result;
             case PARAM:
             case PRINT_:
             case READ_:
+                if(i.arg1==nullptr) return os << "var not declared!!!";
                 return os << instr_name[i.type] << " " << *i.arg1;
             case RET:
                 return os << "ret";
