@@ -286,7 +286,16 @@ void check_expr_tree_rec(Node * root){
         exprTypes.insert(root->type);
     }
     if(root->type == Node::NodeType::LVALUE){
-        int lvtype = Env::get_type(string(root->val.sval));
+        std::string id = string(root->val.sval);
+        std::string id_narray = "";
+        for(int i=0; i < id.size(); i++){
+            if(id[i] == '['){
+                break;
+            }else{
+                id_narray += id[i];
+            }
+        }
+        int lvtype = Env::get_type(id_narray);
         if(lvtype == -1){
             printf("Variable:%s was not declared!!!! We are not taking care of this!\n",
             root->val.sval);
