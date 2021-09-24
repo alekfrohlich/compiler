@@ -44,6 +44,7 @@ bool error = false;
     }               expval;
     struct {
         char * sval;
+        char * stripped_sval;
         bool   array_ref;
     }               lvalueval;
     struct {
@@ -216,16 +217,16 @@ int main(int argc, char **argv)
     yyparse();
     Env::close_scope();
     // printf("===========\n");
-    
+
     if(!error){
         printf("Trees:\n");
         for(auto it=exprlist.begin();it != exprlist.end();++it){
             Node::print_tree(*it);
         }
-        
+
         printf("Symbol Table:\n");
         printf("%s\n", Env::scope_vars.c_str());
-        
+
         printf("numexpressions: OK - %lu\n", exprlist.size());
         printf("variable declaration in the same scope: OK\n");
         printf("break inside for: OK\n");

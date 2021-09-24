@@ -1,4 +1,8 @@
 %{
+
+//   This file implements the lexical analyser for the grammar CC-2021-1, you may
+// find it in BNF form under `docs`.
+
 // Definitions
 #include <stdlib.h>
 #include <stdbool.h>
