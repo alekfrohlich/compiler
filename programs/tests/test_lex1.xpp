@@ -12,6 +12,7 @@ def j(int param1) {
     float   var2;
     string  var3;
     int     var4;
+    int     var5;
 
     var1 = 10;
     var2 = 3.1452;
