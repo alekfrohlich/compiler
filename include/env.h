@@ -56,6 +56,7 @@ public:
     static void open_scope(int scope_type = 0) {
         // cout << "Opening Scope:" << endl;
         bool inside_for = scope_type == 1 || Env::is_inside_for();
+        // cout << Env::is_inside_for() << "\n";
         _stack.push(new Env(inside_for));
     }
 

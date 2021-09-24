@@ -238,11 +238,11 @@ void yyerror(const char *s)
 
 bool break_inside_for()
 {
-    if (Env::is_inside_for()) {
+    if (!Env::is_inside_for()) {
         yyerror("Break is NOT inside for");
         return false;
     } else {
-        printf("Break is inside for\n");
+        // printf("Break is inside for\n");
         return true;
     }
 }
