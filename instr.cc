@@ -16,11 +16,14 @@ void gen(IType t, Address *a1, Address *a2, Address *r) {
 void gen(IType t, Address *a1, Address *r) {
     _code.push_back(Instruction(t,a1,nullptr,r));
 }
-void gen(IType t, Address *a1, int label_num) {
-    _code.push_back(Instruction(t,a1,nullptr,new Constant(label_num)));
+void gen(IType t, Address *a1) {
+    _code.push_back(Instruction(t,a1,nullptr,nullptr));
 }
-void gen(IType t, int label_num) {
-    _code.push_back(Instruction(t,nullptr,nullptr,new Constant(label_num)));
+void gen(IType t, Address *a1, int num) {
+    _code.push_back(Instruction(t,a1,nullptr,new Constant(num)));
+}
+void gen(IType t, int num) {
+    _code.push_back(Instruction(t,nullptr,nullptr,new Constant(num)));
 }
 void gen(IType t) {
     _code.push_back(Instruction(t,nullptr,nullptr,nullptr));

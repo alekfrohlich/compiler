@@ -6,7 +6,7 @@ FLAGS	:= -Iinclude
 
 run: $(DEPS)
 	flex xpp.l
-	bison -d -v xpp.y
+	bison -d xpp.y
 	g++ $(FLAGS) xpp.tab.c lex.yy.c $(CPP) -o compiler
 
 debug: $(DEPS)

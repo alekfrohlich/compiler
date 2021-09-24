@@ -1,3 +1,6 @@
+def g() {;}
+def h(int a1) {;}
+
 def f() {
     // Test EXPA and assignments
     int x;
@@ -42,10 +45,20 @@ def f() {
     a[2 + ((3+9)*4) - (x+y)] = 5;
     int m[2][5][7];
     m[x][y][z] = 2;
-    
+
     for(x = 1; x < y; x = x + 2 + 3){
         z = z + 1;
     }
+
+    // Test function calls
+    x = g();
+    x = h(y);
+
+    // Print and Read
+    print 2+3*5;
+    print x+y;
+    read a[1];
+    read x;
 
     return;
 }

@@ -63,7 +63,7 @@ set<int> exprTypes;
 /* Variables */
 %nterm <expval> factor unaryexpr term numexpression expression
 %nterm <lvalueval>   lvalue
-%nterm <ival>        type
+%nterm <ival>        type paramlistcall
 %nterm <sval>        arraylistexp
 %%
 
@@ -103,23 +103,26 @@ atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1.sval, $1.arra
          | lvalue '=' funccall
 ;
 
-funccall: IDENT '(' paramlistcall ')';
-paramlistcall: IDENT ',' paramlistcall
-            |  IDENT
-            |  %empty
+funccall: IDENT '(' paramlistcall ')' { gen(IType::CALL, Env::get_symbol($1, false), $3); }
+;
+paramlistcall: IDENT ',' paramlistcall { $$ = $3 + 1; gen(IType::PARAM, Env::get_symbol($1, false)); }
+            |  IDENT                   { $$ = 1;      gen(IType::PARAM, Env::get_symbol($1, false)); }
+            |  %empty                  { $$ = 0; }
 ;
 
-printstat: PRINT expression;
-readstat:  READ  lvalue;
+printstat: PRINT expression { gen(IType::PRINT_, $2.addr); }
+;
+readstat:  READ  lvalue     { gen(IType::READ_ , Env::get_symbol($2.sval, $2.array_ref)); }
+;
 
 ifstat:   IF '(' expression ')' { gen(IType::IFFALSE, $3.addr, make_label()); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); } elsestat;
 elsestat: ELSE   { attach_label(1); gen(IType::GOTO, make_label()); Env::open_scope(); } '{' statelist '}' { Env::close_scope(); attach_label(); }
         | %empty { attach_label(); }
 ;
 
-forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';' 
+forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';'
                                { gen(IType::IFFALSE, $6.addr, make_label()); gen(IType::GOTO, make_label()); $1.atr_line = get_next_line(); }
-                               atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); } 
+                               atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); }
                                statement { gen(IType::GOTO, make_label()); attach_label_at($1.atr_line); Env::close_scope(); attach_label(); };
 
 allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;

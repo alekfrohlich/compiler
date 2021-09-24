@@ -2,6 +2,7 @@
 #define INSTR_H
 
 #include <iostream>
+#include <iomanip>
 
 #include "address.h"
 
@@ -12,20 +13,20 @@ struct Constant : public Address {
     Constant(int v)    : ival(v) {type = 0;}
     Constant(double v) : fval(v) {type = 1;}
     Constant(string v) : sval(v) {type = 2;}
-    Constant()                   {type = 3;} //null
+    Constant()                   {type = 3;} // null
     int ival;
     double fval;
     string sval;
     int type;
-    
+
     virtual ostream& print(ostream& os) {
-        if(type==0){
-            return os << ival;    
-        }else if(type==1){
+        if (type == 0) {
+            return os << ival;
+        } else if (type == 1) {
             return os << fval;
-        }else if(type==2){
+        } else if (type == 2) {
             return os << sval;
-        }else if(type==3){
+        } else if (type == 3) {
             return os << "null";
         }
         return os << ival;
@@ -47,21 +48,12 @@ private:
     static int _num;
 };
 
-// struct ArrayRef : public Address {
-
-//     ArrayRef(string r) : ref(r) {}
-//     virtual ostream& print(ostream& os) {
-//         return os << ref;
-//     }
-//     string ref;
-// };
-
 struct Label {
     int  num;
     int  line;
     Label(int l) : num(_num), line(l) { _num++; }
     static int get_num() { return _num; }
-    friend ostream& operator<<(ostream& os, Label& l) { return os << "L00" << l.num; } // Only handles first 10 labels correctly
+    friend ostream& operator<<(ostream& os, Label& l) { return os << "L" << setw(3) << setfill('0') << l.num; }
 private:
     static int _num;
 };
@@ -73,6 +65,8 @@ enum IType : unsigned {
     DIV,
     MOD,
     ASSIGN,
+    CALL,
+    PARAM,
     UPLUS,
     UMINUS,
     IFFALSE,
@@ -84,8 +78,10 @@ enum IType : unsigned {
     EQ,
     NEQ,
     RET,
+    PRINT_,
+    READ_,
 };
-static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq", "ret"};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "call", "param", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq", "ret", "print", "read"};
 
 struct Instruction {
 
@@ -112,6 +108,7 @@ struct Instruction {
             case NEQ:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.arg2 << ", " << *i.result;
             case ASSIGN:
+            case CALL:
             case UPLUS:
             case UMINUS:
                 return os << instr_name[i.type] << " " << *i.arg1 << ", " << *i.result;
@@ -119,6 +116,10 @@ struct Instruction {
                 return os << "ifF " << *i.arg1 << " goto L" << *i.result;
             case GOTO:
                 return os << "goto L" << *i.result;
+            case PARAM:
+            case PRINT_:
+            case READ_:
+                return os << instr_name[i.type] << " " << *i.arg1;
             case RET:
                 return os << "ret";
         }
@@ -127,8 +128,9 @@ struct Instruction {
 
 void gen(IType t, Address *a1, Address *a2, Address *r);
 void gen(IType t, Address *a1, Address *r);
-void gen(IType t, Address *a1, int label_num);
-void gen(IType t, int label_num);
+void gen(IType t, Address *a1, int num);
+void gen(IType t, Address *a1);
+void gen(IType t, int num);
 void gen(IType t);
 void emit_code();
 int  make_label();
