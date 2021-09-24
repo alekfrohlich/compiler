@@ -36,27 +36,53 @@ public:
     ValueType val;
     NodeType type;
     
-    static void print_tree_rec(Node* root){
+    static std::string print_tree_rec(Node* root){
+
+        std::string result = ""; 
+        switch (root->type)
+        {
+        case NodeType::INTEGER:
+            result = std::to_string(root->val.ival) + " "; break;
+        case NodeType::FLOAT:
+            result = std::to_string(root->val.fval) + " "; break;
+        case NodeType::STRING:
+            result = std::string(root->val.sval) + " "; break;
+        case NodeType::NUL:
+            result = std::string("null "); break;
+        case NodeType::LVALUE:
+            result = std::string(root->val.sval) + " "; break;
+        case NodeType::PLUS:
+            result = std::string("+ "); break;
+        case NodeType::MINUS:
+            result = std::string("- "); break;
+        case NodeType::UMINUS:
+            result = std::string("- "); break;
+        case NodeType::UPLUS:
+            result = std::string("+ "); break;
+        case NodeType::MOD:
+            result = std::string("% "); break;
+        case NodeType::DIV:
+            result = std::string("/ "); break;
+        case NodeType::TIMES:
+            result = std::string("* "); break;
+        default:
+            break;
+        }
+        
         if(root->l) {
-            print_tree_rec(root->l);
+            result += print_tree_rec(root->l);
         }
-        printf("type:%d - ", root->type);
-        if (root->type == NodeType::INTEGER){
-            printf("value:%d; ", root->val.ival);
-        }else if(root->type == NodeType::FLOAT){
-            printf("value:%lf; ", root->val.fval);
-        }else if(root->type == NodeType::STRING || root->type == NodeType::LVALUE){
-            printf("value:%s; ", root->val.sval);
-        }
+        
         if(root->r) {
-            print_tree_rec(root->r);
+            result += print_tree_rec(root->r);
         }
+        return result;        
     }
     
     static void print_tree(Node* root){
         printf("NumExpr Tree:\n");
-        print_tree_rec(root);
-        printf("\n\n");
+        printf("%s\n", print_tree_rec(root).c_str());
+        printf("\n");
     }
     
     static std::string print_tree_rec_array(Node* root){
@@ -91,7 +117,7 @@ public:
         case NodeType::UPLUS:
             return result+std::string("+ ");
         case NodeType::MOD:
-            return result+std::string("%% ");
+            return result+std::string("% ");
         case NodeType::DIV:
             return result+std::string("/ ");
         case NodeType::TIMES:
