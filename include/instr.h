@@ -117,5 +117,7 @@ void gen(IType t);
 void emit_code();
 int  make_label();
 void attach_label(int shift=0);
+void attach_label_at(int);
+int  get_next_line();
 
 #endif

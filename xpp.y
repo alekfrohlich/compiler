@@ -45,15 +45,20 @@ set<int> exprTypes;
         char * sval;
         bool   array_ref;
     }               lvalueval;
+    struct {
+        int exp_line;
+        int atr_line;
+    } forval;
     Node *          nodeval;
 }
 
  /* Tokens */
-%token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE FOR NEW NUL
+%token DEF INT FLOAT STRING BREAK PRINT READ RETURN IF ELSE NEW NUL
 %token <ival> CMP
 %token <sval> IDENT STRING_C
 %token <ival> INT_C
 %token <fval> FLOAT_C
+%token <forval> FOR
 
 /* Variables */
 %nterm <expval> factor unaryexpr term numexpression expression
@@ -112,7 +117,7 @@ elsestat: ELSE   { attach_label(1); gen(IType::GOTO, make_label()); Env::open_sc
         | %empty { attach_label(); }
 ;
 
-forstat: FOR '(' atribstat ';' expression ';' atribstat ')' { Env::open_scope(1); } statement { Env::close_scope(); };
+forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';' { gen(IType::IFFALSE, $5.addr, make_label()); gen(IType::GOTO, make_label()); $1.atr_line = get_next_line(); } atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); } statement { gen(IType::GOTO, make_label()); attach_label_at($1.atr_line); Env::close_scope(); attach_label(); };
 
 allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
 
@@ -189,6 +194,8 @@ arraylistexp:  arraylistexp  '[' numexpression ']' {
 
 
 %%
+// forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';' { gen(IType::IFFALSE, L0); gen(IType::GOTO, L1); $1.atr_line = get_next_line(); } atribstat ')' { gen(IType::GOTO, L2); attach_label(L2); Env::open_scope(1); attach_label(L1); } statement { gen(IType::GOTO, L3); attach_label(L3); Env::close_scope(); attach_label(L0); };
+
 // $$ = $$ + string("[1]");
 int main(int argc, char **argv)
 {

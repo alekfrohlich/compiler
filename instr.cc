@@ -56,3 +56,13 @@ void attach_label(int shift) {
     l->line = _code.size() + shift;
     _label_map.insert(pair<int,Label*>(l->line, l));
 }
+void attach_label_at(int pos) {
+    Label * l = _label_stack.top();
+    _label_stack.pop();
+    l->line = pos;
+    _label_map.insert(pair<int,Label*>(l->line, l));
+}
+
+int get_next_line() {
+    return _code.size();
+}
