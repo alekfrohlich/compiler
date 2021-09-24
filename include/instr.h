@@ -9,10 +9,26 @@ using namespace std;
 
 struct Constant : public Address {
 
-    Constant(int v) : val(v) {}
-    int val;
+    Constant(int v)    : ival(v) {type = 0;}
+    Constant(double v) : fval(v) {type = 1;}
+    Constant(string v) : sval(v) {type = 2;}
+    Constant()                   {type = 3;} //null
+    int ival;
+    double fval;
+    string sval;
+    int type;
+    
     virtual ostream& print(ostream& os) {
-        return os << val;
+        if(type==0){
+            return os << ival;    
+        }else if(type==1){
+            return os << fval;
+        }else if(type==2){
+            return os << sval;
+        }else if(type==3){
+            return os << "null";
+        }
+        return os << ival;
     }
 };
 

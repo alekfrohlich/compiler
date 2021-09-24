@@ -117,7 +117,10 @@ elsestat: ELSE   { attach_label(1); gen(IType::GOTO, make_label()); Env::open_sc
         | %empty { attach_label(); }
 ;
 
-forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';' { gen(IType::IFFALSE, $5.addr, make_label()); gen(IType::GOTO, make_label()); $1.atr_line = get_next_line(); } atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); } statement { gen(IType::GOTO, make_label()); attach_label_at($1.atr_line); Env::close_scope(); attach_label(); };
+forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';' 
+                               { gen(IType::IFFALSE, $6.addr, make_label()); gen(IType::GOTO, make_label()); $1.atr_line = get_next_line(); }
+                               atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); } 
+                               statement { gen(IType::GOTO, make_label()); attach_label_at($1.atr_line); Env::close_scope(); attach_label(); };
 
 allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
 
@@ -154,9 +157,9 @@ unaryexpr: '+' factor                 { $$.node = new Node(Node::UPLUS,  $2.node
 ;
 
 factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullptr, nullptr, $1); $$.addr = new Constant($1); }
-        | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
-        | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); }
-        | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr); }
+        | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); $$.addr = new Constant($1); }
+        | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); $$.addr = new Constant(string($1)); }
+        | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr);     $$.addr = new Constant(); }
         | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1.sval); $$.addr = Env::get_symbol($1.sval, $1.array_ref); }
         | '(' numexpression ')'       { $$.node = $2.node; $$.addr = $2.addr; }
 ;
@@ -180,9 +183,12 @@ lvalue: IDENT arraylistexp            {
 arraylistdecl: arraylistdecl '[' INT_C ']'        | %empty;
 arraylistexp:  arraylistexp  '[' numexpression ']' {
                                                 if (!check_expr_tree($3.node)) YYABORT;
-                                                char* numexpstr = (char*) malloc(2);
-                                                numexpstr[0]    = '1';
-                                                numexpstr[1]    = '\0';
+                                                std::string expr_str = Node::print_tree_rec_array($3.node);
+                                                // std::cout << endl;
+                                                // std::cout << expr_str << std::endl;
+                                                int s_len = expr_str.length();
+                                                char* numexpstr = (char*) malloc(s_len+5);
+                                                strcpy(numexpstr, expr_str.c_str());
                                                 char *result    = (char*) malloc(strlen(numexpstr) + strlen($1) + 2 + 1);
                                                 strcpy(result, $1);
                                                 strcat(result, "[");

@@ -59,6 +59,49 @@ public:
         printf("\n\n");
     }
     
+    static std::string print_tree_rec_array(Node* root){
+        std::string l_str, r_str; 
+        if(root->l) {
+            l_str = print_tree_rec_array(root->l);
+        }
+        
+        if(root->r) {
+            r_str = print_tree_rec_array(root->r);
+        }
+        std::string result = l_str+r_str;
+        
+        switch (root->type)
+        {
+        case NodeType::INTEGER:
+            return result+std::to_string(root->val.ival) + " ";
+        case NodeType::FLOAT:
+            // printf("value:%lf; ", root->val.fval); break;
+        case NodeType::STRING:
+            // printf("value:%s; ", root->val.sval); break;
+        case NodeType::NUL:
+            return result+std::string("null ");
+        case NodeType::LVALUE:
+            return result+std::string(root->val.sval) + " ";
+        case NodeType::PLUS:
+            return result+std::string("+ ");
+        case NodeType::MINUS:
+            return result+std::string("- ");
+        case NodeType::UMINUS:
+            return result+std::string("- ");
+        case NodeType::UPLUS:
+            return result+std::string("+ ");
+        case NodeType::MOD:
+            return result+std::string("%% ");
+        case NodeType::DIV:
+            return result+std::string("/ ");
+        case NodeType::TIMES:
+            return result+std::string("* ");
+        default:
+            break;
+        }
+        return std::string("");
+    }
+    
 };
 
 #endif
