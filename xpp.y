@@ -27,6 +27,7 @@ unsigned yylex(void);
 
 vector<Node *> exprlist;
 set<int> exprTypes;
+bool error = false;
 
 //map<unsigned, string> token_map;
 
@@ -215,17 +216,20 @@ int main(int argc, char **argv)
     yyparse();
     Env::close_scope();
     // printf("===========\n");
-    printf("Trees:\n");
-    for(auto it=exprlist.begin();it != exprlist.end();++it){
-        Node::print_tree(*it);
+    
+    if(!error){
+        printf("Trees:\n");
+        for(auto it=exprlist.begin();it != exprlist.end();++it){
+            Node::print_tree(*it);
+        }
+        
+        printf("Symbol Table:\n");
+        printf("%s\n", Env::scope_vars.c_str());
+        
+        printf("numexpressions: OK - %lu\n", exprlist.size());
+        printf("variable declaration in the same scope: OK\n");
+        printf("break inside for: OK\n");
     }
-    
-    printf("Symbol Table:\n");
-    printf("%s\n", Env::scope_vars.c_str());
-    
-    printf("numexpressions: OK - %lu\n", exprlist.size());
-    printf("variable declaration in the same scope: OK\n");
-    printf("break inside for: OK\n");
 
     // create_token_map();
     // list_tokens();
@@ -233,6 +237,7 @@ int main(int argc, char **argv)
 
 void yyerror(const char *s)
 {
+    error = true;
     fprintf(stderr, "Error %d:%d: %s\n", yylloc.first_line, yylloc.first_column, s);
 }
 
