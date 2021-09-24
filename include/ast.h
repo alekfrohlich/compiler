@@ -75,9 +75,9 @@ public:
         case NodeType::INTEGER:
             return result+std::to_string(root->val.ival) + " ";
         case NodeType::FLOAT:
-            // printf("value:%lf; ", root->val.fval); break;
+            return result+std::to_string(root->val.fval) + " ";
         case NodeType::STRING:
-            // printf("value:%s; ", root->val.sval); break;
+                return result+std::string(root->val.sval) + " ";
         case NodeType::NUL:
             return result+std::string("null ");
         case NodeType::LVALUE:

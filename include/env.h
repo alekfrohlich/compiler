@@ -25,6 +25,24 @@ struct Symbol : Address {
         return os << id;
     }
     void print2() { cout << id; }
+    
+    string get_type(){
+        switch (type)
+        {
+        case SymType::T_INT:
+            return "int"; break;
+        case SymType::T_FLOAT:
+            return "float"; break;
+        case SymType::T_STRING:
+            return "string"; break;
+        case SymType::T_FUNC:
+            return "func"; break;
+        default:
+            break;
+        }
+        return string("");
+    }
+
 };
 
 class Env {
@@ -86,6 +104,13 @@ public:
     static bool check_put(string id, int type) {
         if (check_symbol_top(id)) {
             _stack.top()->_table.insert({id, new Symbol(id, SymType(type))});
+            
+            // print symbol table 
+            for(int i=0;i<_stack.size()-1;i++){
+                scope_vars += "  ";
+            }
+            scope_vars += _stack.top()->_table[id]->get_type() + " " +  id + "\n";
+            
             return true;
         }
         return false;
@@ -124,6 +149,8 @@ public:
     }
 
 public:
+    static string scope_vars;
+
 
 private:
     bool _inside_for;
