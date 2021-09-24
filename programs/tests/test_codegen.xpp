@@ -40,6 +40,8 @@ def f() {
     }
     int a[10];
     a[2] = 5;
+    int m[2][5][7];
+    m[x][y][z] = 2;
 
     return;
 }

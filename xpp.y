@@ -158,20 +158,22 @@ factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullpt
 
 lvalue: IDENT arraylistexp            {
                                         // printf("")
-                                        printf("%s-\n", $2);
+                                        // printf("%s-\n", $2);
                                         if ($2[0] == '\0')
                                             $$.array_ref = false;
                                         else
                                             $$.array_ref = true;
                                         char *result = (char*) malloc(strlen($1) + strlen($2) + 1); // +1 for the null-terminator
-                                        // in real code you would check for errors in malloc here
                                         strcpy(result, $1);
                                         strcat(result, $2);
                                         $$.sval = result;
+                                        // Remove
+                                        // $$.sval = $1;
+                                        // $$.array_ref = false;
                                       };
 
-arraylistdecl: arraylistdecl'[' INT_C ']'        | %empty;
-arraylistexp:  arraylistexp'[' numexpression {
+arraylistdecl: arraylistdecl '[' INT_C ']'        | %empty;
+arraylistexp:  arraylistexp  '[' numexpression ']' {
                                                 if (!check_expr_tree($3.node)) YYABORT;
                                                 char* numexpstr = (char*) malloc(2);
                                                 numexpstr[0]    = '1';
@@ -181,9 +183,9 @@ arraylistexp:  arraylistexp'[' numexpression {
                                                 strcat(result, "[");
                                                 strcat(result, numexpstr);
                                                 strcat(result, "]");
-                                                printf("%s", result);
-                                                $$ = (char*) malloc(1);
-                                             } ']' | %empty { $$ = (char*) malloc(1); $$[0]='\0'; };
+                                                // printf("%s", result);
+                                                $$ = result;
+                                             } | %empty { $$ = (char*) malloc(1); $$[0]='\0'; };
 
 
 %%
