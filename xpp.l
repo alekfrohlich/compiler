@@ -72,7 +72,7 @@ null                { return NUL;       }
 
     /* Named rules */
 {white}               {}
-{ident}               { yylval.sval   = strdup(yytext); return IDENT; }
+{ident}               { yylval.lvalueval.sval = strdup(yytext); return IDENT; }
 {string_constant}     {
                         char * dup = strdup(yytext);
                         dup++;

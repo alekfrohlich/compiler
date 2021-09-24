@@ -1,5 +1,7 @@
 %{
 #include <stdio.h>
+#include <string.h>
+
 #include <string>
 #include <map>
 #include <vector>
@@ -39,6 +41,10 @@ set<int> exprTypes;
         Node*    node;
         Address* addr;
     }               expval;
+    struct {
+        char * sval;
+        bool   array_ref;
+    }               lvalueval;
     Node *          nodeval;
 }
 
@@ -51,8 +57,9 @@ set<int> exprTypes;
 
 /* Variables */
 %nterm <expval> factor unaryexpr term numexpression expression
-%nterm <sval> lvalue
-%nterm <ival> type
+%nterm <lvalueval>   lvalue
+%nterm <ival>        type
+%nterm <sval>        arraylistexp
 %%
 
 program: statement { emit_code(); }
@@ -86,7 +93,7 @@ statement: vardecl ';'
 ;
 
 vardecl: type IDENT { if(!check_put(string($2), $1)) YYABORT; } arraylistdecl;
-atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1); gen(IType::ASSIGN, $3.addr, s); }
+atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1.sval, $1.array_ref); gen(IType::ASSIGN, $3.addr, s); }
          | lvalue '=' allocexpression
          | lvalue '=' funccall
 ;
@@ -145,18 +152,42 @@ factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullpt
         | FLOAT_C                     { $$.node = new Node(Node::FLOAT,   nullptr, nullptr, $1); }
         | STRING_C                    { $$.node = new Node(Node::STRING,  nullptr, nullptr, $1); }
         | NUL                         { $$.node = new Node(Node::NUL,     nullptr, nullptr); }
-        | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1); $$.addr = Env::get_symbol($1); }
+        | lvalue                      { $$.node = new Node(Node::LVALUE,  nullptr, nullptr, $1.sval); $$.addr = Env::get_symbol($1.sval, $1.array_ref); }
         | '(' numexpression ')'       { $$.node = $2.node; $$.addr = $2.addr; }
 ;
 
-lvalue: IDENT arraylistexp;
+lvalue: IDENT arraylistexp            {
+                                        // printf("")
+                                        printf("%s-\n", $2);
+                                        if ($2[0] == '\0')
+                                            $$.array_ref = false;
+                                        else
+                                            $$.array_ref = true;
+                                        char *result = (char*) malloc(strlen($1) + strlen($2) + 1); // +1 for the null-terminator
+                                        // in real code you would check for errors in malloc here
+                                        strcpy(result, $1);
+                                        strcat(result, $2);
+                                        $$.sval = result;
+                                      };
 
 arraylistdecl: arraylistdecl'[' INT_C ']'        | %empty;
-arraylistexp:  arraylistexp'[' numexpression {if(!check_expr_tree($3.node)) YYABORT;} ']' | %empty;
+arraylistexp:  arraylistexp'[' numexpression {
+                                                if (!check_expr_tree($3.node)) YYABORT;
+                                                char* numexpstr = (char*) malloc(2);
+                                                numexpstr[0]    = '1';
+                                                numexpstr[1]    = '\0';
+                                                char *result    = (char*) malloc(strlen(numexpstr) + strlen($1) + 2 + 1);
+                                                strcpy(result, $1);
+                                                strcat(result, "[");
+                                                strcat(result, numexpstr);
+                                                strcat(result, "]");
+                                                printf("%s", result);
+                                                $$ = (char*) malloc(1);
+                                             } ']' | %empty { $$ = (char*) malloc(1); $$[0]='\0'; };
 
 
 %%
-
+// $$ = $$ + string("[1]");
 int main(int argc, char **argv)
 {
 #if YYDEBUG

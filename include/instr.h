@@ -31,6 +31,15 @@ private:
     static int _num;
 };
 
+// struct ArrayRef : public Address {
+
+//     ArrayRef(string r) : ref(r) {}
+//     virtual ostream& print(ostream& os) {
+//         return os << ref;
+//     }
+//     string ref;
+// };
+
 struct Label {
     int  num;
     int  line;

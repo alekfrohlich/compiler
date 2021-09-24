@@ -14,6 +14,7 @@ enum SymType : int {
     T_FLOAT,
     T_STRING,
     T_FUNC,
+    T_ARRAY_REF,
 };
 
 struct Symbol : Address {
@@ -102,16 +103,20 @@ public:
         return -1;
     }
 
-    static Symbol* get_symbol(string id) {
-        Env * e = _stack.top();
-        while (e) {
-            if (e->_table.find(id) != e->_table.end()) {
-                // cout << id << endl;
-                return e->_table[id];
+    static Symbol* get_symbol(string id, bool array_ref) {
+        if (array_ref) {
+            return new Symbol(id, SymType::T_ARRAY_REF);
+        } else {
+            Env * e = _stack.top();
+            while (e) {
+                if (e->_table.find(id) != e->_table.end()) {
+                    // cout << id << endl;
+                    return e->_table[id];
+                }
+                e = e->_prev;
             }
-            e = e->_prev;
+            return nullptr;
         }
-        return nullptr;
     }
 
     static bool is_inside_for() {
