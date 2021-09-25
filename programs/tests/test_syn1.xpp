@@ -1,9 +1,9 @@
 
 // Test function declaration and funclist
-def f()                         { int x; }
-def g(int a, float b, string c) { int x; }
-def h(int a)                    { int x; }
-def i(int a, int b,)            { int x; }
+def f()                         { int x; return;}
+def g(int a, float b, string c) { int x; return;}
+def h(int a)                    { int x; return;}
+def i(int a, int b,)            { int x; return;}
 
 // Test statement statelist
 def j(int param1) {
@@ -30,7 +30,7 @@ def j(int param1) {
     //test allocexpression
     i5 = new int[12];
     i5 = new int[i1];
-    i6 = new int[13][25];
+    i6 = new int[13][25+1][2];
     ia2[1][1] = new int[8];
 
     //test funccall and paramlistcall

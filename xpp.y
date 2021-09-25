@@ -130,25 +130,30 @@ allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABO
         char* numexpstr = (char*) malloc(s_len+5);
         strcpy(numexpstr, expr_str.c_str());
 
-        char* typestr;
+        char typestr[20];
         switch ($2) {
             case 0:
-                typestr = (char*) malloc(5);
-                typestr = "int ";
+                // typestr = (char*) malloc(5);
+                strcpy(typestr, "int ");
+                break;
             case 1:
-                typestr = (char*) malloc(7);
-                typestr = "float ";
+                // typestr = (char*) malloc(7);
+                // typestr = "float ";
+                strcpy(typestr, "float ");
+                break;
             case 2:
-                typestr = (char*) malloc(8);
-                typestr = "string ";
+                // typestr = (char*) malloc(8);
+                // typestr = "string ";
+                strcpy(typestr, "string ");
+                break;
         }
 
         char *result    = (char*) malloc(strlen(typestr) + strlen(numexpstr) + strlen($7) + 2 + 1);
         strcpy(result, typestr);
-        strcat(result, numexpstr);
         strcat(result, "[");
-        strcat(result, $7);
+        strcat(result, numexpstr);
         strcat(result, "]");
+        strcat(result, $7);
         $$ = result;
     }
 ;
