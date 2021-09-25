@@ -1,0 +1,101 @@
+// xpp program to find total area of two overlapping rectangles
+// Given two overlapping rectangles on a plane. We are given bottom left and 
+// top right points of the two rectangles.
+ 
+// Prints Total Area  of two overlapping rectangles
+def overlappingArea(int l1x, int l1y, int l2x, int l2y, int r1x, int r1y, int r2x, int r2y)
+{
+    // Area of 1st Rectangle
+    float area1;
+    area1 = (l1x - r1x) * (l1y - r1y);
+    if (area1 < 0) {
+        area1 = area1 * -1;
+    }
+ 
+    // Area of 2nd Rectangle
+    float area2;
+    area2 = (l2x - r2x) * (l2y - r2y);
+    if (area2 < 0) {
+        area2 = area2 * -1;
+    }
+ 
+    // Length of intersecting part i.e start from max(l1x, l2x) of
+    // x-coordinate and end at min(r1.x,r2.x) x-coordinate by subtracting
+    // start from end we get required lengths
+    
+    // x_dist
+    float min_rx;
+    if (r1x < r2x) {
+        min_rx = r1x;
+    } else {
+        min_rx = r2x;
+    }
+    
+    float max_lx;
+    if (l1x > l2x) {
+        max_lx = l1x;
+    } else {
+        max_lx = l2x;
+    }
+    
+    float x_dist;
+    x_dist = min_rx - max_lx;
+    
+    // y_dist
+    float min_ry;
+    if (r1y < r2y) {
+        min_ry = r1y;
+    } else {
+        min_ry = r2y;
+    }
+    
+    float max_ly;
+    if (l1y > l2y) {
+        max_ly = l1y;
+    } else {
+        max_ly = l2y;
+    }
+    
+    float y_dist;
+    y_dist = min_ry - max_ly;
+    
+    //intersection
+    float areaI;
+    areaI = 0;
+    if( x_dist > 0) {
+        if( y_dist > 0 ) {
+            areaI = x_dist * y_dist;
+        }
+    }
+     
+    float result;
+    result = area1 + area2 - areaI;
+    
+    print "The overlapping area is ";
+    print result; 
+}
+ 
+// Driver Code
+def main()
+{
+    float l1x;
+    float l1y;
+    float l2x;
+    float l2y;
+    float r1x;
+    float r1y;
+    float r2x;
+    float r2y;
+    
+    read l1x;
+    read l1y;
+    read l2x;
+    read l2y;
+    read r1x;
+    read r1y;
+    read r2x;
+    read r2y;
+    
+    // Function Call
+    l1x = overlappingArea(l1x, l1y, l2x, l2y, r1x, r1y, r2x, r2y);
+}

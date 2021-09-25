@@ -1,0 +1,112 @@
+//17 numexpressions
+def jkl(int param1) {
+    int     vari1;
+    int     vari2;
+    int     vari3;
+    int     vari4;
+    int     vari5;
+    int     vari6;
+    int     vari7;
+    
+    int     varia1[3][3];
+    int     varia2;
+    
+    float   varf1;
+    float   varf2;
+    
+    string  vars1;
+    string  vars2;
+
+    vari1 = 2 + 5 - (4*3/3) + 5 % 2;
+    varf1 = 2.0 + 5.0 - (4.0*3.0/3.0) + 5.0;
+    vars1 = "a" + "b";
+    vari2 = vari1 * 1 / 1;
+    vari3 = vari1 + vari2;
+    
+    {
+        float varft1;
+        varft1 = 3.3;
+        varft1 = varft1 * varf1 + 2.2;
+        
+        string varst1;
+        varst1 = "qwe";
+        vars1 = varst1 + vars1;
+    }
+    
+    vars2 = null;
+    varf2 = null;
+    vari5 = null;
+    
+    vars2 = vars2 + "ert" + vars1;
+    varf2 = varf2 / (1.0*(2.2-1.1))+ varf1;
+    vari2 = vari5;
+    
+    vari6 = +6;
+    vari6 = -7;
+    
+    varia2 = new int[1+9][12-2];
+    
+    vari1 = vari1 + varia1[2-2][1*0] + 1; 
+    
+    if(1+2 < 3+4){
+        vari1 = 1;
+    }
+}
+
+
+// Test function declaration
+def f()                         { int x; return;}
+def g(int a, float b, string c) { int x; return;}
+def h(int a)                    { int x; return;}
+def i(int a, int b,)            { int x; return;}
+
+// Test statement
+def j(int param1) {
+    int     var1;
+    float   var2;
+    string  var3;
+    int     var4;
+    int     var5;
+    int     var6;
+
+    //coloca as attribs aqui nicolas
+    var1 = 10;
+    var2 = 3.1452;
+    var3 = "lalala";
+    // var4 = null;
+    int var1copy;
+    // var1copy = var1;
+    var5 = 2*var1 + 5 - (4*3/3) + 5 % 2;
+    var6 = 2 < 2;
+
+    // break;
+    return;
+
+    int a;
+    // int a;
+    for(a = 12; 1 < 12; a = 1) break;
+    for(a = 13; 1 < 12; a = 1) {
+       int b;
+        for(b = 14; 1 < 12; b = 1){
+            int c;
+            {
+                int d;
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        break;
+    }
+
+    // break;
+
+
+    {
+        float var4f;
+    }
+
+}
+
+// def j(int param1) {int x;}
