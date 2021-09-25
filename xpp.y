@@ -7,7 +7,6 @@
 #include <vector>
 #include <set>
 
-
 #include "ast.h"
 #include "env.h"
 #include "instr.h"
@@ -19,9 +18,6 @@ bool check_expr_tree(Node * root);
 void check_expr_tree_rec(Node * root);
 // void create_token_map();
 // void list_tokens();
-
-//!TODO: Generalize Constant
-//!TODO: Fix labels
 
 unsigned yylex(void);
 
@@ -66,7 +62,7 @@ bool error = false;
 %nterm <expval> factor unaryexpr term numexpression expression
 %nterm <lvalueval>   lvalue
 %nterm <ival>        type paramlistcall
-%nterm <sval>        arraylistexp
+%nterm <sval>        arraylistexp allocexpression
 %%
 
 program: statement { emit_code(); }
@@ -95,13 +91,13 @@ statement: vardecl ';'
         |  ifstat
         |  forstat
         |  '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
-        |  BREAK ';' { if(!break_inside_for()) YYABORT;}
+        |  BREAK ';' { if(!break_inside_for()) YYABORT; gen(IType::BREAK_); }
         |  ';' { gen(IType::NOP); }
 ;
 
 vardecl: type IDENT { if(!check_put(string($2), $1)) YYABORT; } arraylistdecl;
 atribstat: lvalue '=' expression { Symbol * s = Env::get_symbol($1.sval, $1.array_ref); gen(IType::ASSIGN, $3.addr, s); }
-         | lvalue '=' allocexpression
+         | lvalue '=' allocexpression { gen(IType::ALLOC, new Symbol($3, SymType::T_ALLOC_EXP)); }
          | lvalue '=' funccall
 ;
 
@@ -127,7 +123,35 @@ forstat: FOR '(' atribstat ';' { $1.exp_line = get_next_line(); } expression ';'
                                atribstat ')' { gen(IType::GOTO, make_label()); attach_label_at($1.exp_line); Env::open_scope(1); attach_label(); }
                                statement { gen(IType::GOTO, make_label()); attach_label_at($1.atr_line); Env::close_scope(); attach_label(); };
 
-allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp;
+allocexpression: NEW type '[' numexpression {if(!check_expr_tree($4.node)) YYABORT;} ']' arraylistexp
+    {
+        string expr_str = Node::print_tree_rec_array($4.node);
+        int s_len = expr_str.length();
+        char* numexpstr = (char*) malloc(s_len+5);
+        strcpy(numexpstr, expr_str.c_str());
+
+        char* typestr;
+        switch ($2) {
+            case 0:
+                typestr = (char*) malloc(5);
+                typestr = "int ";
+            case 1:
+                typestr = (char*) malloc(7);
+                typestr = "float ";
+            case 2:
+                typestr = (char*) malloc(8);
+                typestr = "string ";
+        }
+
+        char *result    = (char*) malloc(strlen(typestr) + strlen(numexpstr) + strlen($7) + 2 + 1);
+        strcpy(result, typestr);
+        strcat(result, numexpstr);
+        strcat(result, "[");
+        strcat(result, $7);
+        strcat(result, "]");
+        $$ = result;
+    }
+;
 
 expression: numexpression               { if(!check_expr_tree($1.node)) YYABORT; $$.addr = $1.addr; }
     | numexpression CMP numexpression   {
@@ -170,8 +194,6 @@ factor:   INT_C                       { $$.node = new Node(Node::INTEGER, nullpt
 ;
 
 lvalue: IDENT arraylistexp            {
-                                        // printf("")
-                                        // printf("%s-\n", $2);
                                         if ($2[0] == '\0')
                                             $$.array_ref = false;
                                         else
@@ -180,17 +202,12 @@ lvalue: IDENT arraylistexp            {
                                         strcpy(result, $1);
                                         strcat(result, $2);
                                         $$.sval = result;
-                                        // Remove
-                                        // $$.sval = $1;
-                                        // $$.array_ref = false;
                                       };
 
 arraylistdecl: arraylistdecl '[' INT_C ']'        | %empty;
 arraylistexp:  arraylistexp  '[' numexpression ']' {
                                                 if (!check_expr_tree($3.node)) YYABORT;
                                                 std::string expr_str = Node::print_tree_rec_array($3.node);
-                                                // std::cout << endl;
-                                                // std::cout << expr_str << std::endl;
                                                 int s_len = expr_str.length();
                                                 char* numexpstr = (char*) malloc(s_len+5);
                                                 strcpy(numexpstr, expr_str.c_str());
@@ -199,7 +216,6 @@ arraylistexp:  arraylistexp  '[' numexpression ']' {
                                                 strcat(result, "[");
                                                 strcat(result, numexpstr);
                                                 strcat(result, "]");
-                                                // printf("%s", result);
                                                 $$ = result;
                                              } | %empty { $$ = (char*) malloc(1); $$[0]='\0'; };
 

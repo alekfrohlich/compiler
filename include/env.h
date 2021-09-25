@@ -15,6 +15,7 @@ enum SymType : int {
     T_STRING,
     T_FUNC,
     T_ARRAY_REF,
+    T_ALLOC_EXP,
 };
 
 struct Symbol : Address {
@@ -25,7 +26,7 @@ struct Symbol : Address {
         return os << id;
     }
     void print2() { cout << id; }
-    
+
     string get_type(){
         switch (type)
         {
@@ -105,13 +106,13 @@ public:
     static bool check_put(string id, int type) {
         if (check_symbol_top(id)) {
             _stack.top()->_table.insert({id, new Symbol(id, SymType(type))});
-            
-            // print symbol table 
+
+            // print symbol table
             for(int i=0;i<_stack.size()-1;i++){
                 scope_vars += "  ";
             }
             scope_vars += _stack.top()->_table[id]->get_type() + " " +  id + "\n";
-            
+
             return true;
         }
         return false;

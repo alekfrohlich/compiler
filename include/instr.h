@@ -126,6 +126,7 @@ enum IType : unsigned {
     UMINUS,
     IFFALSE,
     GOTO,
+    BREAK_,
     LT,
     GT,
     LTE,
@@ -136,8 +137,9 @@ enum IType : unsigned {
     PRINT_,
     READ_,
     NOP,
+    ALLOC,
 };
-static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "call", "param", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq", "ret", "print", "read", "nop"};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "call", "param", "uplus", "uminus", "ifF", "goto", "break", "lt", "gt", "lte", "gte", "eq", "neq", "ret", "print", "read", "nop", "new"};
 
 struct Instruction {
 
@@ -176,6 +178,7 @@ struct Instruction {
             case GOTO:
                 if(i.result==nullptr) return os << "var not declared!!!";
                 return os << "goto L" << *i.result;
+            case ALLOC:
             case PARAM:
             case PRINT_:
             case READ_:
@@ -183,6 +186,7 @@ struct Instruction {
                 return os << instr_name[i.type] << " " << *i.arg1;
             case RET:
             case NOP:
+            case BREAK_:
                 return os << instr_name[i.type];
         }
     }

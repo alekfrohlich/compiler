@@ -60,5 +60,9 @@ def f() {
     read a[1];
     read x;
 
+    // Memory allocation
+    int a[5];
+    a = new int[5];
+
     return;
 }
