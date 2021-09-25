@@ -2,10 +2,10 @@
 
 
 // Test function declaration
-def f()                         { int x; }
-def g(int a, float b, string c) { int x; }
-def h(int a)                    { int x; }
-def i(int a, int b,)            { int x; }
+def f()                         { int x; return;}
+def g(int a, float b, string c) { int x; return;}
+def h(int a)                    { int x; return;}
+def i(int a, int b,)            { int x; return;}
 
 // Test statement
 def j(int param1) {

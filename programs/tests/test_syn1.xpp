@@ -1,9 +1,9 @@
 
 // Test function declaration and funclist
-def f()                         { int x; return;}
-def g(int a, float b, string c) { int x; return;}
-def h(int a)                    { int x; return;}
-def i(int a, int b,)            { int x; return;}
+def f()                         {return;}
+def g(int a, float b, string c) {return;}
+def h(int a)                    {return;}
+def i(int a, int b,)            {return;}
 
 // Test statement statelist
 def j(int param1) {

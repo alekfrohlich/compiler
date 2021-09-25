@@ -1,6 +1,6 @@
 
 // Test function declaration
-def g(int a, float b, string c) { int x; }
+def g(int a, float b, string c) { return;}
 
 def sum(int a, int b, int c) {
     c = a + b;
