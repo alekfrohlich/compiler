@@ -76,7 +76,7 @@ program: statement { emit_code(); }
 
 funclist: funcdef funclist | funcdef;
 funcdef: DEF IDENT                      { if(!check_put(string($2), SymType::T_FUNC)) YYABORT; Env::open_scope();}
-                  '(' paramlist ')' '{' { Env::open_scope(); }
+                  '(' paramlist ')' '{' { attach_function(string($2)); Env::open_scope(); }
                       statelist '}'     { Env::close_scope(); Env::close_scope(); }
 ;
 
@@ -96,7 +96,7 @@ statement: vardecl ';'
         |  forstat
         |  '{' { Env::open_scope(); } statelist '}' { Env::close_scope(); }
         |  BREAK ';' { if(!break_inside_for()) YYABORT;}
-        |  ';'
+        |  ';' { gen(IType::NOP); }
 ;
 
 vardecl: type IDENT { if(!check_put(string($2), $1)) YYABORT; } arraylistdecl;

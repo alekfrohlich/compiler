@@ -9,6 +9,7 @@ int Label::_num;
 list<Instruction>   _code;
 map<int, Label*>    _label_map;
 stack<Label*>       _label_stack;
+map<int, string>    _func_label_map;
 
 void gen(IType t, Address *a1, Address *a2, Address *r) {
     _code.push_back(Instruction(t,a1,a2,r));
@@ -35,12 +36,15 @@ void emit_code() {
 
     for (int i = 0; i < size; i++) {
         auto l = _label_map.find(i);
-        if (l != _label_map.end()) {
-            cout << *(l->second) << ": ";
+        auto f = _func_label_map.find(i);
+        if (l != _label_map.end()) { // 8 ou 10
+            cout << setw(8) << setfill(' ') << *(l->second) << ": ";
+        } else if (f != _func_label_map.end()) {
+           cout << setw(8) << setfill(' ') << f->second << ": ";
         } else {
-            cout << "      ";
+            cout << "          ";
         }
-        cout << i << ") " << _code.front() << endl;
+        cout << setw(3) << setfill('0') << i << ") " << _code.front() << endl;
         _code.pop_front();
     }
 }
@@ -64,6 +68,9 @@ void attach_label_at(int pos) {
     _label_stack.pop();
     l->line = pos;
     _label_map.insert(pair<int,Label*>(l->line, l));
+}
+void attach_function(string f_id) {
+    _func_label_map.insert(pair<int,string>(get_next_line(), f_id));
 }
 
 int get_next_line() {

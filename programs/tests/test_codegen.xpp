@@ -1,5 +1,5 @@
-def g() {;}
-def h(int a1) {;}
+def g() { return; }
+def h(int a1) { return; }
 
 def f() {
     // Test EXPA and assignments

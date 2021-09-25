@@ -107,8 +107,8 @@ struct Label {
     int  num;
     int  line;
     Label(int l) : num(_num), line(l) { _num++; }
-    static int get_num() { return _num; }
-    friend ostream& operator<<(ostream& os, Label& l) { return os << "L" << setw(3) << setfill('0') << l.num; }
+    static int get_num() { return _num; } //<< setw(3) << setfill('0')
+    friend ostream& operator<<(ostream& os, Label& l) { return os << string("L") + to_string(l.num); }
 private:
     static int _num;
 };
@@ -135,8 +135,9 @@ enum IType : unsigned {
     RET,
     PRINT_,
     READ_,
+    NOP,
 };
-static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "call", "param", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq", "ret", "print", "read"};
+static const char* instr_name[] = {"add", "sub", "mul", "div", "mod", "mov", "call", "param", "uplus", "uminus", "ifF", "goto", "lt", "gt", "lte", "gte", "eq", "neq", "ret", "print", "read", "nop"};
 
 struct Instruction {
 
@@ -181,7 +182,8 @@ struct Instruction {
                 if(i.arg1==nullptr) return os << "var not declared!!!";
                 return os << instr_name[i.type] << " " << *i.arg1;
             case RET:
-                return os << "ret";
+            case NOP:
+                return os << instr_name[i.type];
         }
     }
 };
@@ -198,6 +200,7 @@ void emit_code();
 int  make_label();
 void attach_label(int shift=0);
 void attach_label_at(int);
+void attach_function(string f_id);
 int  get_next_line();
 
 #endif
